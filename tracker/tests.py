@@ -329,6 +329,54 @@ class InterviewAndAITests(TestCase):
         self.assertRedirects(response, reverse('application_detail', kwargs={'pk': self.app.pk}))
         self.assertTrue(Interview.objects.filter(application=self.app, interview_type='Technical Round').exists())
 
+    def test_update_interview(self):
+        interview = Interview.objects.create(
+            application=self.app,
+            interview_date=timezone.now() + timedelta(days=1),
+            interview_type='HR Screening'
+        )
+        update_data = {
+            'interview_date': '2026-09-02T11:00',
+            'interview_type': 'Updated HR Screening',
+            'meeting_link': 'https://meet.google.com/xyz',
+            'interview_notes': 'Updated notes'
+        }
+        response = self.client.post(reverse('interview_update', kwargs={'pk': interview.pk}), update_data)
+        self.assertRedirects(response, reverse('application_detail', kwargs={'pk': self.app.pk}))
+        interview.refresh_from_db()
+        self.assertEqual(interview.interview_type, 'Updated HR Screening')
+        self.assertEqual(interview.meeting_link, 'https://meet.google.com/xyz')
+
+    def test_delete_interview(self):
+        interview = Interview.objects.create(
+            application=self.app,
+            interview_date=timezone.now() + timedelta(days=1),
+            interview_type='HR Screening'
+        )
+        response = self.client.post(reverse('interview_delete', kwargs={'pk': interview.pk}))
+        self.assertRedirects(response, reverse('application_detail', kwargs={'pk': self.app.pk}))
+        self.assertFalse(Interview.objects.filter(pk=interview.pk).exists())
+
+    def test_interview_data_isolation(self):
+        # Create another user and app
+        other_user = User.objects.create_user(username='other', password='password123')
+        other_app = JobApplication.objects.create(
+            user=other_user, job_title='Role', company_name='Company', status='Applied'
+        )
+        other_interview = Interview.objects.create(
+            application=other_app,
+            interview_date=timezone.now() + timedelta(days=1),
+            interview_type='Other HR Screening'
+        )
+        
+        # Current user (aiuser) tries to edit other_user's interview
+        response = self.client.get(reverse('interview_update', kwargs={'pk': other_interview.pk}))
+        self.assertEqual(response.status_code, 404)
+        
+        # Current user tries to delete other_user's interview
+        response = self.client.post(reverse('interview_delete', kwargs={'pk': other_interview.pk}))
+        self.assertEqual(response.status_code, 404)
+
     def test_ai_analysis_missing_description(self):
         no_desc_app = JobApplication.objects.create(
             user=self.user,
