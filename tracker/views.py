@@ -82,19 +82,36 @@ class ApplicationListView(LoginRequiredMixin, ListView):
     model = JobApplication
     template_name = 'tracker/application_list.html'
     context_object_name = 'applications'
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         from .models import Category
         context['categories'] = Category.objects.all()
+        
+        # Build query string for pagination links (preserves search, filters & sort, excluding 'page')
+        query_params = self.request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        context['query_params'] = query_params.urlencode()
+
+        # Build query string for sorting headers (preserves search & filters, excluding 'sort' & 'page')
+        sort_params = self.request.GET.copy()
+        if 'page' in sort_params:
+            del sort_params['page']
+        if 'sort' in sort_params:
+            del sort_params['sort']
+        context['sort_base_url'] = sort_params.urlencode()
+        context['current_sort'] = self.request.GET.get('sort', '')
         return context
 
     def get_queryset(self):
-        queryset = JobApplication.objects.filter(user=self.request.user).order_by('-created_at')
+        queryset = JobApplication.objects.filter(user=self.request.user)
         q = self.request.GET.get('q')
         status = self.request.GET.get('status')
         location = self.request.GET.get('location')
         category = self.request.GET.get('category')
+        sort = self.request.GET.get('sort')
         
         if q:
             queryset = queryset.filter(Q(job_title__icontains=q) | Q(company_name__icontains=q) | Q(tags__icontains=q))
@@ -105,7 +122,34 @@ class ApplicationListView(LoginRequiredMixin, ListView):
         if category:
             queryset = queryset.filter(category_id=category)
             
-        return queryset
+        # Dynamic Column Sorting
+        sort_mapping = {
+            'company': 'company_name',
+            '-company': '-company_name',
+            'role': 'job_title',
+            '-role': '-job_title',
+            'category': 'category__name',
+            '-category': '-category__name',
+            'location': 'location',
+            '-location': '-location',
+            'status': 'status',
+            '-status': '-status',
+            'date': 'application_date',
+            '-date': '-application_date',
+        }
+        
+        from django.db.models import F
+        
+        if sort and sort in sort_mapping:
+            order_field = sort_mapping[sort]
+            if order_field in ['application_date', '-application_date']:
+                return queryset.order_by(order_field, '-created_at')
+            else:
+                # Provide a secondary sort by date to keep things predictable within the same category/status
+                return queryset.order_by(order_field, F('application_date').desc(nulls_last=True), '-created_at')
+        else:
+            # Default: Latest application dates first, null dates at the end, then fallback to newest entries
+            return queryset.order_by(F('application_date').desc(nulls_last=True), '-created_at')
 
 class ApplicationDetailView(LoginRequiredMixin, DetailView):
     model = JobApplication

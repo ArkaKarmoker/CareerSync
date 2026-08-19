@@ -33,25 +33,35 @@
         
         <div class="lg:col-span-2">
             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Status</label>
-            <select name="status" class="appearance-none block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
-                <option value="">All Statuses</option>
-                <option value="Wishlist" {% if request.GET.status == 'Wishlist' %}selected{% endif %}>Wishlist</option>
-                <option value="Applied" {% if request.GET.status == 'Applied' %}selected{% endif %}>Applied</option>
-                <option value="Screening" {% if request.GET.status == 'Screening' %}selected{% endif %}>Screening</option>
-                <option value="Interview" {% if request.GET.status == 'Interview' %}selected{% endif %}>Interview</option>
-                <option value="Selected" {% if request.GET.status == 'Selected' %}selected{% endif %}>Selected</option>
-                <option value="Rejected" {% if request.GET.status == 'Rejected' %}selected{% endif %}>Rejected</option>
-            </select>
+            <div class="relative">
+                <select name="status" class="appearance-none block w-full px-3.5 py-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
+                    <option value="">All Statuses</option>
+                    <option value="Wishlist" {% if request.GET.status == 'Wishlist' %}selected{% endif %}>Wishlist</option>
+                    <option value="Applied" {% if request.GET.status == 'Applied' %}selected{% endif %}>Applied</option>
+                    <option value="Screening" {% if request.GET.status == 'Screening' %}selected{% endif %}>Screening</option>
+                    <option value="Interview" {% if request.GET.status == 'Interview' %}selected{% endif %}>Interview</option>
+                    <option value="Selected" {% if request.GET.status == 'Selected' %}selected{% endif %}>Selected</option>
+                    <option value="Rejected" {% if request.GET.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </div>
+            </div>
         </div>
 
         <div class="lg:col-span-2">
             <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Category</label>
-            <select name="category" class="appearance-none block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
-                <option value="">All Categories</option>
-                {% for cat in categories %}
-                <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
-                {% endfor %}
-            </select>
+            <div class="relative">
+                <select name="category" class="appearance-none block w-full px-3.5 py-2.5 pr-10 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
+                    <option value="">All Categories</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-slate-400">
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </div>
+            </div>
         </div>
 
         <div class="lg:col-span-2">
@@ -69,14 +79,53 @@
 </div>
 
 <!-- Table Card -->
-<div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
+<div id="applications-table" class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-100">
             <thead class="bg-slate-50/80">
                 <tr>
-                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Company & Role</th>
-                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Category & Location</th>
-                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status & Date</th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider select-none">
+                        <a href="?{% if sort_base_url %}{{ sort_base_url }}&{% endif %}sort={% if current_sort == 'company' %}-company{% else %}company{% endif %}" class="inline-flex items-center group/head hover:text-slate-900 transition">
+                            Company & Role
+                            <span class="ml-2 inline-flex">
+                                {% if current_sort == 'company' %}
+                                    <i class="fas fa-sort-up text-primary-600"></i>
+                                {% elif current_sort == '-company' %}
+                                    <i class="fas fa-sort-down text-primary-600"></i>
+                                {% else %}
+                                    <i class="fas fa-sort text-slate-300 group-hover/head:text-slate-500"></i>
+                                {% endif %}
+                            </span>
+                        </a>
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider select-none">
+                        <a href="?{% if sort_base_url %}{{ sort_base_url }}&{% endif %}sort={% if current_sort == 'category' %}-category{% else %}category{% endif %}" class="inline-flex items-center group/head hover:text-slate-900 transition">
+                            Category & Location
+                            <span class="ml-2 inline-flex">
+                                {% if current_sort == 'category' %}
+                                    <i class="fas fa-sort-up text-primary-600"></i>
+                                {% elif current_sort == '-category' %}
+                                    <i class="fas fa-sort-down text-primary-600"></i>
+                                {% else %}
+                                    <i class="fas fa-sort text-slate-300 group-hover/head:text-slate-500"></i>
+                                {% endif %}
+                            </span>
+                        </a>
+                    </th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider select-none">
+                        <a href="?{% if sort_base_url %}{{ sort_base_url }}&{% endif %}sort={% if current_sort == 'status' %}-status{% elif current_sort == '-status' %}-date{% elif current_sort == '-date' %}date{% else %}status{% endif %}" class="inline-flex items-center group/head hover:text-slate-900 transition">
+                            Status & Date
+                            <span class="ml-2 inline-flex">
+                                {% if current_sort == 'status' or current_sort == 'date' %}
+                                    <i class="fas fa-sort-up text-primary-600"></i>
+                                {% elif current_sort == '-status' or current_sort == '-date' %}
+                                    <i class="fas fa-sort-down text-primary-600"></i>
+                                {% else %}
+                                    <i class="fas fa-sort text-slate-300 group-hover/head:text-slate-500"></i>
+                                {% endif %}
+                            </span>
+                        </a>
+                    </th>
                     <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
@@ -133,5 +182,73 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination Footer -->
+    {% if is_paginated %}
+    <div class="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="text-xs text-slate-500 font-medium flex items-center space-x-1">
+            <span>Showing</span>
+            <span class="font-bold text-slate-900">{{ page_obj.start_index }}</span>
+            <span>to</span>
+            <span class="font-bold text-slate-900">{{ page_obj.end_index }}</span>
+            <span>of</span>
+            <span class="font-bold text-slate-900">{{ paginator.count }}</span>
+            <span>applications</span>
+        </div>
+        
+        <div class="flex items-center space-x-1">
+            {% if page_obj.has_previous %}
+                <a href="?{% if query_params %}{{ query_params }}&{% endif %}page=1" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition shadow-2xs" title="First Page">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ page_obj.previous_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition shadow-2xs">
+                    <i class="fas fa-chevron-left mr-1"></i> Prev
+                </a>
+            {% else %}
+                <span class="px-3 py-1.5 rounded-lg border border-slate-100 bg-slate-50 text-xs font-bold text-slate-300 cursor-not-allowed">
+                    <i class="fas fa-chevron-left mr-1"></i> Prev
+                </span>
+            {% endif %}
+
+            {% for num in paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="px-3.5 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-extrabold shadow-sm">
+                        {{ num }}
+                    </span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ num }}" class="px-3.5 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition shadow-2xs">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+                <a href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ page_obj.next_page_number }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition shadow-2xs">
+                    Next <i class="fas fa-chevron-right ml-1"></i>
+                </a>
+                <a href="?{% if query_params %}{{ query_params }}&{% endif %}page={{ paginator.num_pages }}" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-primary-50 hover:text-primary-600 transition shadow-2xs" title="Last Page">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+            {% else %}
+                <span class="px-3 py-1.5 rounded-lg border border-slate-100 bg-slate-50 text-xs font-bold text-slate-300 cursor-not-allowed">
+                    Next <i class="fas fa-chevron-right ml-1"></i>
+                </span>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.search.includes('page=') || window.location.search.includes('sort=')) {
+            const table = document.getElementById('applications-table');
+            if (table) {
+                // Scroll instantly so there's no jumpy animation
+                const y = table.getBoundingClientRect().top + window.scrollY - 24; // 24px padding top
+                window.scrollTo({top: y, behavior: 'instant'});
+            }
+        }
+    });
+</script>
 {% endblock %}
