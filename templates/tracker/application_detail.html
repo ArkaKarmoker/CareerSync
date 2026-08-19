@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Detail Hero Header -->
+<div class="bg-gradient-to-r from-slate-900 via-primary-900 to-indigo-900 rounded-3xl p-8 mb-8 text-white shadow-xl shadow-primary-900/10 relative overflow-hidden">
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    
+    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <a href="{% url 'application_list' %}" class="text-slate-300 hover:text-white text-xs font-bold mb-3 inline-flex items-center transition bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
+                <i class="fas fa-arrow-left mr-1.5 text-primary-300"></i> Back to Applications
+            </a>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mt-1">{{ application.job_title }}</h1>
+            <div class="text-lg text-slate-200 font-semibold mt-1.5 flex items-center flex-wrap gap-3">
+                <span>{{ application.company_name }}</span>
+                <span class="px-3 py-0.5 inline-flex text-xs leading-5 font-bold rounded-full shadow-sm
+                    {% if application.status == 'Applied' %}bg-blue-500/20 text-blue-200 border border-blue-400/30
+                    {% elif application.status == 'Interview' %}bg-amber-500/20 text-amber-200 border border-amber-400/30
+                    {% elif application.status == 'Selected' %}bg-emerald-500/20 text-emerald-200 border border-emerald-400/30
+                    {% elif application.status == 'Rejected' %}bg-rose-500/20 text-rose-200 border border-rose-400/30
+                    {% else %}bg-slate-500/20 text-slate-200 border border-slate-400/30{% endif %}">
+                    {{ application.status }}
+                </span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 shrink-0">
+            <a href="{% url 'application_update' application.pk %}" class="bg-white/10 hover:bg-white/20 text-white font-bold py-2.5 px-4 rounded-xl text-xs backdrop-blur-sm border border-white/15 transition flex items-center">
+                <i class="fas fa-edit mr-1.5 text-primary-300"></i> Edit
+            </a>
+            <a href="{% url 'application_delete' application.pk %}" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 font-bold py-2.5 px-4 rounded-xl text-xs border border-rose-400/30 transition flex items-center">
+                <i class="fas fa-trash-alt mr-1.5 text-rose-400"></i> Delete
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Info Column -->
+    <div class="lg:col-span-2 space-y-8">
+        <!-- Job Overview Card -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+            <h2 class="text-lg font-extrabold text-slate-900 mb-6 flex items-center border-b border-slate-100 pb-4">
+                <i class="fas fa-info-circle text-primary-600 mr-2"></i> Job Information
+            </h2>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p class="text-2xs font-bold text-slate-400 uppercase tracking-wider mb-1">Category</p>
+                    <p class="text-sm font-bold text-slate-800 truncate">{% if application.category %}{{ application.category.name }}{% else %}Uncategorized{% endif %}</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p class="text-2xs font-bold text-slate-400 uppercase tracking-wider mb-1">Location</p>
+                    <p class="text-sm font-bold text-slate-800 truncate" title="{{ application.location }}">{{ application.location|default:"Not specified" }}</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p class="text-2xs font-bold text-slate-400 uppercase tracking-wider mb-1">Salary</p>
+                    <p class="text-sm font-bold text-emerald-700 truncate">{{ application.salary|default:"Not specified" }}</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    <p class="text-2xs font-bold text-slate-400 uppercase tracking-wider mb-1">Applied On</p>
+                    <p class="text-sm font-bold text-slate-800 truncate">{{ application.application_date|default:"Not specified" }}</p>
+                </div>
+            </div>
+            
+            {% if application.tags %}
+            <div class="mb-6">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tags</p>
+                <div class="flex flex-wrap gap-2">
+                    {% for tag in application.tags.split %}
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">#{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if application.job_url %}
+            <div class="mb-6">
+                <p class="text-2xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Job Posting URL</p>
+                <a href="{{ application.job_url }}" target="_blank" class="inline-flex items-center text-xs font-bold text-primary-600 hover:text-primary-800 hover:underline break-all bg-primary-50 px-4 py-2 rounded-xl border border-primary-100 transition">
+                    <i class="fas fa-external-link-alt mr-2 text-2xs"></i> {{ application.job_url }}
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if application.notes %}
+            <div class="mb-6">
+                <p class="text-2xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Personal Notes</p>
+                <div class="bg-amber-50/60 border border-amber-200/80 p-4 rounded-2xl text-slate-800 text-sm whitespace-pre-wrap leading-relaxed">{{ application.notes }}</div>
+            </div>
+            {% endif %}
+
+            <div>
+                <p class="text-2xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Job Description</p>
+                <div class="bg-slate-50 border border-slate-200/80 p-5 rounded-2xl text-slate-700 text-sm whitespace-pre-wrap leading-relaxed max-h-96 overflow-y-auto font-normal">{{ application.job_description|default:"No description provided." }}</div>
+            </div>
+        </div>
+
+        <!-- AI Insights Card -->
+        <div id="ai-insights" class="bg-gradient-to-br from-primary-900 via-primary-950 to-slate-900 rounded-3xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-white/10 pb-5">
+                <h2 class="text-xl font-extrabold flex items-center text-white mb-3 sm:mb-0">
+                    <div class="bg-primary-600 text-white p-2 rounded-xl mr-3 shadow-md">
+                        <i class="fas fa-robot text-base"></i>
+                    </div>
+                    AI Job Insights
+                </h2>
+                <a href="{% url 'analyze_job' application.pk %}" class="bg-white hover:bg-slate-100 text-primary-900 text-xs font-bold py-2.5 px-5 rounded-xl shadow-md transition transform hover:-translate-y-0.5 whitespace-nowrap flex items-center">
+                    <i class="fas fa-wand-magic-sparkles mr-2 text-primary-600"></i> {% if application.analysis %}Regenerate Analysis{% else %}Analyze with AI{% endif %}
+                </a>
+            </div>
+            
+            {% if application.analysis %}
+                <div class="space-y-5">
+                    <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
+                        <h3 class="text-2xs font-bold text-primary-200 uppercase tracking-wider mb-1.5"><i class="fas fa-align-left mr-1.5"></i> Job Summary</h3>
+                        <p class="text-sm text-slate-100 leading-relaxed">{{ application.analysis.job_summary }}</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                            <h3 class="text-2xs font-bold text-primary-200 uppercase tracking-wider mb-1.5"><i class="fas fa-laptop-code mr-1.5"></i> Required Skills</h3>
+                            <p class="text-xs text-slate-100 font-medium">{{ application.analysis.required_skills }}</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                            <h3 class="text-2xs font-bold text-primary-200 uppercase tracking-wider mb-1.5"><i class="fas fa-user-tie mr-1.5"></i> Experience Needed</h3>
+                            <p class="text-xs text-slate-100 font-medium">{{ application.analysis.required_experience }}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
+                        <h3 class="text-2xs font-bold text-primary-200 uppercase tracking-wider mb-1.5"><i class="fas fa-microchip mr-1.5"></i> Key Technologies</h3>
+                        <p class="text-xs text-slate-100 font-medium">{{ application.analysis.important_technologies }}</p>
+                    </div>
+                    <div class="bg-gradient-to-r from-amber-500/20 to-amber-600/20 p-5 rounded-2xl border border-amber-400/30">
+                        <h3 class="text-xs font-extrabold text-amber-200 uppercase tracking-wider mb-2 flex items-center"><i class="fas fa-lightbulb text-amber-400 text-sm mr-2"></i> Interview Preparation</h3>
+                        <div class="text-xs text-amber-100 whitespace-pre-wrap leading-relaxed">{{ application.analysis.interview_preparation_suggestions }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 text-primary-300 mb-3 border border-white/10">
+                        <i class="fas fa-brain text-2xl"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white mb-1">No AI Analysis generated yet</h3>
+                    <p class="text-xs text-slate-300 max-w-sm mx-auto">Click "Analyze with AI" to extract key skills, required experience, tech stack, and interview prep suggestions.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar Column: Interviews -->
+    <div class="space-y-6">
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 p-6">
+            <div class="flex justify-between items-center mb-5 border-b border-slate-100 pb-4">
+                <h2 class="text-base font-extrabold text-slate-900 flex items-center">
+                    <i class="far fa-comments text-primary-600 mr-2"></i> Interviews
+                </h2>
+                <a href="{% url 'interview_create' application.pk %}" class="bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold py-1.5 px-3 rounded-xl transition shadow-sm flex items-center">
+                    <i class="fas fa-plus mr-1 text-2xs"></i> Add
+                </a>
+            </div>
+            
+            <div class="space-y-4">
+                {% for interview in application.interviews.all %}
+                <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-extrabold text-slate-900 text-xs uppercase tracking-wider bg-white px-2.5 py-1 rounded-lg border border-slate-200/60">{{ interview.interview_type }}</span>
+                    </div>
+                    <div class="text-xs text-slate-600 mb-2 flex items-center">
+                        <i class="far fa-calendar-alt text-primary-600 mr-2 text-xs"></i> {{ interview.interview_date|date:"M d, Y" }} &bull; {{ interview.interview_date|time:"h:i A" }}
+                    </div>
+                    {% if interview.meeting_link %}
+                    <div class="mb-2">
+                        <a href="{{ interview.meeting_link }}" target="_blank" class="inline-flex items-center justify-center text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg transition shadow-sm mt-1">
+                            <i class="fas fa-video mr-1.5"></i> Meeting Link
+                        </a>
+                    </div>
+                    {% endif %}
+                    {% if interview.interview_notes %}
+                    <div class="mt-2 text-xs text-slate-600 bg-white p-3 rounded-xl border border-slate-200/60 italic">
+                        "{{ interview.interview_notes }}"
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="text-center py-8 text-slate-400">
+                    <i class="far fa-calendar-times text-3xl mb-2 text-slate-300"></i>
+                    <p class="text-xs font-bold text-slate-500">No interviews scheduled</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Page Header Hero Banner -->
+<div class="bg-gradient-to-r from-slate-900 via-primary-900 to-indigo-900 rounded-3xl p-8 mb-8 text-white shadow-xl shadow-primary-900/10 relative overflow-hidden">
+    <!-- Decorative background glow -->
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    
+    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-primary-200 text-xs font-bold mb-3 backdrop-blur-sm border border-white/10">
+                <i class="fas fa-chart-line mr-1.5 text-primary-300"></i> Overview
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Dashboard</h1>
+            <p class="text-slate-300 text-sm sm:text-base mt-1 max-w-xl">Track your job applications, upcoming interviews, and AI analysis in one unified workspace.</p>
+        </div>
+        <a href="{% url 'application_create' %}" class="bg-white hover:bg-slate-100 text-primary-900 font-bold py-3 px-6 rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center shrink-0">
+            <i class="fas fa-plus mr-2 text-primary-600"></i> New Application
+        </a>
+    </div>
+</div>
+
+<!-- Stats Overview Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover-scale flex items-center justify-between">
+        <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Applications</p>
+            <p class="text-3xl font-extrabold text-slate-900 mt-1">{{ total_apps }}</p>
+        </div>
+        <div class="h-12 w-12 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center border border-primary-100 shadow-sm">
+            <i class="fas fa-layer-group text-lg"></i>
+        </div>
+    </div>
+
+    {% for status in status_counts %}
+    <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm hover-scale flex items-center justify-between">
+        <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">{{ status.status }}</p>
+            <p class="text-3xl font-extrabold text-slate-900 mt-1">{{ status.count }}</p>
+        </div>
+        <div class="h-12 w-12 rounded-2xl flex items-center justify-center shadow-sm border
+            {% if status.status == 'Applied' %}bg-blue-50 text-blue-600 border-blue-100
+            {% elif status.status == 'Interview' %}bg-amber-50 text-amber-600 border-amber-100
+            {% elif status.status == 'Selected' %}bg-emerald-50 text-emerald-600 border-emerald-100
+            {% elif status.status == 'Rejected' %}bg-rose-50 text-rose-600 border-rose-100
+            {% else %}bg-slate-100 text-slate-600 border-slate-200{% endif %}">
+            <i class="fas 
+                {% if status.status == 'Applied' %}fa-paper-plane
+                {% elif status.status == 'Interview' %}fa-comments
+                {% elif status.status == 'Selected' %}fa-check-circle
+                {% elif status.status == 'Rejected' %}fa-times-circle
+                {% else %}fa-star{% endif %} text-lg"></i>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Recent Applications Section -->
+    <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+            <h2 class="text-base font-extrabold text-slate-900 flex items-center"><i class="fas fa-history text-primary-600 mr-2"></i> Recent Applications</h2>
+            <a href="{% url 'application_list' %}" class="text-xs text-primary-600 hover:text-primary-800 font-bold transition flex items-center">View All <i class="fas fa-arrow-right ml-1 text-2xs"></i></a>
+        </div>
+        <div class="divide-y divide-slate-100 flex-grow">
+            {% for app in recent_apps %}
+            <a href="{% url 'application_detail' app.pk %}" class="block hover:bg-slate-50/80 transition duration-150 px-6 py-4 group">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center min-w-0 pr-4">
+                        <div class="h-10 w-10 rounded-xl bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm shadow-inner shrink-0 mr-3.5 group-hover:bg-primary-50 group-hover:text-primary-600 transition">
+                            {{ app.company_name|make_list|first|upper }}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-bold text-slate-900 truncate group-hover:text-primary-600 transition">{{ app.job_title }}</p>
+                            <p class="text-xs text-slate-500 font-medium truncate mt-0.5">{{ app.company_name }} &bull; {{ app.location|default:"Remote" }}</p>
+                        </div>
+                    </div>
+                    <div class="shrink-0">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-lg
+                            {% if app.status == 'Applied' %}bg-blue-50 text-blue-700 border border-blue-200/60
+                            {% elif app.status == 'Interview' %}bg-amber-50 text-amber-700 border border-amber-200/60
+                            {% elif app.status == 'Selected' %}bg-emerald-50 text-emerald-700 border border-emerald-200/60
+                            {% elif app.status == 'Rejected' %}bg-rose-50 text-rose-700 border border-rose-200/60
+                            {% else %}bg-slate-100 text-slate-700 border border-slate-200/60{% endif %}">
+                            {{ app.status }}
+                        </span>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="px-6 py-12 text-center flex flex-col items-center justify-center h-full">
+                <div class="h-12 w-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
+                    <i class="fas fa-inbox text-xl"></i>
+                </div>
+                <p class="text-slate-900 font-bold text-sm">No applications yet</p>
+                <p class="text-xs text-slate-500 mt-0.5">Start tracking your job search today!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Upcoming Interviews Section -->
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+        <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <h2 class="text-base font-extrabold text-slate-900 flex items-center"><i class="far fa-calendar-check text-primary-600 mr-2"></i> Upcoming Interviews</h2>
+            <span class="px-2.5 py-0.5 rounded-full bg-primary-50 text-primary-700 text-xs font-bold border border-primary-100">{{ upcoming_interviews.count }}</span>
+        </div>
+        <div class="divide-y divide-slate-100 flex-grow">
+            {% for interview in upcoming_interviews %}
+            <div class="px-6 py-4 hover:bg-slate-50/80 transition duration-150">
+                <div class="flex justify-between items-start mb-1">
+                    <p class="text-sm font-bold text-slate-900">{{ interview.application.company_name }}</p>
+                    <span class="text-2xs font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-md border {% with itype=interview.interview_type|lower %}{% if 'technical' in itype %}bg-blue-50 text-blue-700 border-blue-100{% elif 'final' in itype %}bg-emerald-50 text-emerald-700 border-emerald-100{% elif 'hr' in itype or 'screening' in itype %}bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100{% elif 'culture' in itype or 'behavioral' in itype %}bg-amber-50 text-amber-700 border-amber-100{% else %}bg-primary-50 text-primary-700 border-primary-100{% endif %}{% endwith %}">
+                        {{ interview.interview_type }}
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium mb-2.5">{{ interview.application.job_title }}</p>
+                <div class="flex items-center text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/60 mb-3">
+                    <i class="far fa-clock text-primary-600 mr-2 text-xs"></i> {{ interview.interview_date|date:"M d, Y" }} &bull; {{ interview.interview_date|time:"h:i A" }}
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    {% if interview.meeting_link %}
+                    <a href="{{ interview.meeting_link }}" target="_blank" class="inline-flex items-center justify-center text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-lg transition shadow-sm">
+                        <i class="fas fa-video mr-1.5"></i> Join Link
+                    </a>
+                    {% else %}
+                    <span></span>
+                    {% endif %}
+                    <a href="{% url 'application_detail' interview.application.pk %}" class="text-xs font-bold text-primary-600 hover:text-primary-800 transition">View Details &rarr;</a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="px-6 py-12 text-center flex flex-col items-center justify-center h-full">
+                <div class="h-12 w-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
+                    <i class="far fa-calendar-times text-xl"></i>
+                </div>
+                <p class="text-slate-900 font-bold text-sm">No upcoming interviews</p>
+                <p class="text-xs text-slate-500 mt-0.5">Keep applying, you'll get there!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

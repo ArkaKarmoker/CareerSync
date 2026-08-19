@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w-full max-w-xl mx-auto my-auto bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-50 text-primary-600 border border-primary-100 shadow-sm mb-3">
+            <i class="fas fa-user-plus text-xl"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Create Account</h2>
+        <p class="text-xs text-slate-500 mt-1 font-medium">Join CareerSync to manage your job search</p>
+    </div>
+    
+    <form method="post" class="space-y-4 sm:space-y-5">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                {{ form.non_field_errors|striptags }}
+            </div>
+        {% endif %}
+        
+        <!-- Row 1: First Name & Last Name -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="{{ form.first_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ form.first_name.label }}</label>
+                <input type="text" name="first_name" id="{{ form.first_name.id_for_label }}" value="{{ form.first_name.value|default_if_none:'' }}" placeholder="John" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                {% if form.first_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.first_name.errors|striptags }}</p>{% endif %}
+            </div>
+            <div>
+                <label for="{{ form.last_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ form.last_name.label }}</label>
+                <input type="text" name="last_name" id="{{ form.last_name.id_for_label }}" value="{{ form.last_name.value|default_if_none:'' }}" placeholder="Doe" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                {% if form.last_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.last_name.errors|striptags }}</p>{% endif %}
+            </div>
+        </div>
+
+        <!-- Row 2: Username & Email -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="{{ form.username.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ form.username.label }}</label>
+                <input type="text" name="username" id="{{ form.username.id_for_label }}" value="{{ form.username.value|default_if_none:'' }}" placeholder="johndoe" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                {% if form.username.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.username.errors|striptags }}</p>{% endif %}
+            </div>
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ form.email.label }}</label>
+                <input type="email" name="email" id="{{ form.email.id_for_label }}" value="{{ form.email.value|default_if_none:'' }}" placeholder="john@example.com" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                {% if form.email.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.email.errors|striptags }}</p>{% endif %}
+            </div>
+        </div>
+
+        <!-- Row 3: Password & Password Confirm -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ form.password.label }}</label>
+                <div class="relative">
+                    <input type="password" name="password" id="{{ form.password.id_for_label }}" class="appearance-none block w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                    <button type="button" onclick="togglePasswordVisibility('{{ form.password.id_for_label }}', 'toggle-icon-pass')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                        <i id="toggle-icon-pass" class="far fa-eye text-sm"></i>
+                    </button>
+                </div>
+                {% if form.password.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.password.errors|striptags }}</p>{% endif %}
+            </div>
+            <div>
+                <label for="{{ form.password_confirm.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ form.password_confirm.label }}</label>
+                <div class="relative">
+                    <input type="password" name="password_confirm" id="{{ form.password_confirm.id_for_label }}" class="appearance-none block w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                    <button type="button" onclick="togglePasswordVisibility('{{ form.password_confirm.id_for_label }}', 'toggle-icon-pass-confirm')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                        <i id="toggle-icon-pass-confirm" class="far fa-eye text-sm"></i>
+                    </button>
+                </div>
+                {% if form.password_confirm.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.password_confirm.errors|striptags }}</p>{% endif %}
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-xl shadow-md text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition transform hover:-translate-y-0.5">
+                Register Account
+            </button>
+        </div>
+    </form>
+    
+    <div class="mt-8 text-center pt-6 border-t border-slate-100">
+        <p class="text-xs text-slate-500 font-semibold">Already have an account? <a href="{% url 'login' %}" class="font-bold text-primary-600 hover:text-primary-800 transition">Log in</a></p>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+{% endblock %}

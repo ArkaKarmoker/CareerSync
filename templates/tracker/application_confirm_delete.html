@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-lg mx-auto mt-16 bg-white/90 backdrop-blur-md p-10 rounded-3xl shadow-xl border border-red-100 text-center relative overflow-hidden">
+    <!-- Decorative background pulse -->
+    <div class="absolute inset-0 bg-red-50 opacity-50 z-0"></div>
+    
+    <div class="relative z-10">
+        <div class="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-100 mb-6 shadow-inner animate-pulse">
+            <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
+        </div>
+        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Delete Application?</h2>
+        <p class="text-base text-gray-600 mt-4 leading-relaxed">
+            Are you sure you want to delete your application for <br/>
+            <strong class="text-gray-900">{{ object.job_title }}</strong> at <strong class="text-gray-900">{{ object.company_name }}</strong>?
+        </p>
+        <div class="mt-4 p-4 bg-red-50 border border-red-100 rounded-xl text-sm text-red-700 font-medium text-left flex items-start">
+            <i class="fas fa-info-circle mt-1 mr-3"></i>
+            <p>This action cannot be undone and will permanently delete all associated interviews, notes, and AI analysis data.</p>
+        </div>
+        
+        <form method="post" class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+            {% csrf_token %}
+            <a href="{% url 'application_detail' object.pk %}" class="inline-flex justify-center items-center w-full sm:w-1/2 py-3 px-6 border border-gray-200 rounded-xl shadow-sm text-sm font-bold text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition">
+                Cancel
+            </a>
+            <button type="submit" class="inline-flex justify-center items-center w-full sm:w-1/2 py-3 px-6 border border-transparent rounded-xl shadow-lg text-sm font-bold text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition transform hover:-translate-y-0.5">
+                <i class="fas fa-trash-alt mr-2"></i> Delete
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

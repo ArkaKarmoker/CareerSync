@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w-full">
+    <!-- Hero Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-primary-900 to-indigo-900 rounded-3xl p-8 mb-8 text-white shadow-xl shadow-primary-900/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div class="flex items-center space-x-5">
+            <div class="h-16 w-16 rounded-2xl bg-gradient-to-tr from-primary-500 to-indigo-500 flex items-center justify-center text-white text-2xl font-extrabold shadow-lg border-2 border-white/20">
+                {{ user.username|make_list|first|upper }}
+            </div>
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center">
+                    {{ user.get_full_name|default:user.username }}
+                </h1>
+                <p class="text-slate-300 text-xs sm:text-sm mt-1 flex items-center gap-3">
+                    <span><i class="far fa-envelope mr-1 text-primary-300"></i> {{ user.email|default:"No email provided" }}</span>
+                    <span>&bull;</span>
+                    <span><i class="far fa-calendar-alt mr-1 text-primary-300"></i> Member since {{ user.date_joined|date:"M Y" }}</span>
+                </p>
+            </div>
+        </div>
+        <a href="{% url 'dashboard' %}" class="text-slate-300 hover:text-white text-xs font-bold bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl backdrop-blur-sm transition border border-white/10">
+            &larr; Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Main Grid: Update Profile & Change Password -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- 1. Update Profile Info Card -->
+        <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
+            <div class="flex items-center mb-6 pb-4 border-b border-slate-100">
+                <div class="h-10 w-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center mr-3 font-bold border border-primary-100">
+                    <i class="fas fa-user-edit"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-extrabold text-slate-900">Profile Information</h2>
+                    <p class="text-xs text-slate-500 font-medium">Update your account personal details</p>
+                </div>
+            </div>
+
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="{{ p_form.username.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Username</label>
+                    <input type="text" name="username" id="{{ p_form.username.id_for_label }}" value="{{ p_form.username.value|default:'' }}" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                    {% if p_form.username.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.username.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ p_form.first_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">First Name</label>
+                        <input type="text" name="first_name" id="{{ p_form.first_name.id_for_label }}" value="{{ p_form.first_name.value|default:'' }}" placeholder="John" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                        {% if p_form.first_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.first_name.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ p_form.last_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Last Name</label>
+                        <input type="text" name="last_name" id="{{ p_form.last_name.id_for_label }}" value="{{ p_form.last_name.value|default:'' }}" placeholder="Doe" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                        {% if p_form.last_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.last_name.errors|striptags }}</p>{% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label for="{{ p_form.email.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
+                    <input type="email" name="email" id="{{ p_form.email.id_for_label }}" value="{{ p_form.email.value|default:'' }}" placeholder="john@example.com" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                    {% if p_form.email.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.email.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end">
+                    <button type="submit" name="update_profile" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition transform hover:-translate-y-0.5 text-xs uppercase tracking-wider">
+                        Update Profile
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 2. Change Password Card -->
+        <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
+            <div class="flex items-center mb-6 pb-4 border-b border-slate-100">
+                <div class="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mr-3 font-bold border border-amber-100">
+                    <i class="fas fa-key"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-extrabold text-slate-900">Change Password</h2>
+                    <p class="text-xs text-slate-500 font-medium">Update your security credentials</p>
+                </div>
+            </div>
+
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                
+                {% for field in pass_form %}
+                <div>
+                    <label for="{{ field.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ field.label }}</label>
+                    <div class="relative">
+                        <input type="password" name="{{ field.name }}" id="{{ field.id_for_label }}" class="appearance-none block w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                        <button type="button" onclick="togglePasswordVisibility('{{ field.id_for_label }}', 'toggle-icon-{{ field.name }}')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                            <i id="toggle-icon-{{ field.name }}" class="far fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                    {% if field.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ field.errors|striptags }}</p>{% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="pt-4 border-t border-slate-100 flex justify-end">
+                    <button type="submit" name="change_password" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl shadow-md transition transform hover:-translate-y-0.5 text-xs uppercase tracking-wider">
+                        Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+{% endblock %}

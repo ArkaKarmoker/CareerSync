@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Page Header Hero Banner -->
+<div class="bg-gradient-to-r from-slate-900 via-primary-900 to-indigo-900 rounded-3xl p-8 mb-8 text-white shadow-xl shadow-primary-900/10 relative overflow-hidden">
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+            <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/10 text-primary-200 text-xs font-bold mb-3 backdrop-blur-sm border border-white/10">
+                <i class="fas fa-list-ul mr-1.5 text-primary-300"></i> Applications
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">All Applications</h1>
+            <p class="text-slate-300 text-sm sm:text-base mt-1 max-w-xl">Search, filter, and organize all your job prospects in one place.</p>
+        </div>
+        <a href="{% url 'application_create' %}" class="bg-white hover:bg-slate-100 text-primary-900 font-bold py-3 px-6 rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center shrink-0">
+            <i class="fas fa-plus mr-2 text-primary-600"></i> New Application
+        </a>
+    </div>
+</div>
+
+<!-- Filters Panel -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 mb-8">
+    <form method="get" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
+        <div class="lg:col-span-4 md:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Search</label>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fas fa-search text-xs"></i>
+                </div>
+                <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search company, title, or tags..." class="pl-9 appearance-none block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
+            </div>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Status</label>
+            <select name="status" class="appearance-none block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
+                <option value="">All Statuses</option>
+                <option value="Wishlist" {% if request.GET.status == 'Wishlist' %}selected{% endif %}>Wishlist</option>
+                <option value="Applied" {% if request.GET.status == 'Applied' %}selected{% endif %}>Applied</option>
+                <option value="Screening" {% if request.GET.status == 'Screening' %}selected{% endif %}>Screening</option>
+                <option value="Interview" {% if request.GET.status == 'Interview' %}selected{% endif %}>Interview</option>
+                <option value="Selected" {% if request.GET.status == 'Selected' %}selected{% endif %}>Selected</option>
+                <option value="Rejected" {% if request.GET.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+        </div>
+
+        <div class="lg:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Category</label>
+            <select name="category" class="appearance-none block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="lg:col-span-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Location</label>
+            <input type="text" name="location" value="{{ request.GET.location }}" placeholder="City, Remote..." class="appearance-none block w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition">
+        </div>
+
+        <div class="lg:col-span-2">
+            <label class="block text-xs font-bold mb-1.5 opacity-0 hidden lg:block">Action</label>
+            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl transition shadow-sm font-bold flex items-center justify-center shrink-0">
+                <i class="fas fa-filter text-xs mr-2"></i> Apply Filter
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Table Card -->
+<div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-100">
+            <thead class="bg-slate-50/80">
+                <tr>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Company & Role</th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Category & Location</th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Status & Date</th>
+                    <th scope="col" class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-100">
+                {% for app in applications %}
+                <tr class="hover:bg-slate-50/80 transition duration-150 group">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-xl bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm shadow-inner mr-3.5 group-hover:bg-primary-50 group-hover:text-primary-600 transition">
+                                {{ app.company_name|make_list|first|upper }}
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition">{{ app.job_title }}</div>
+                                <div class="text-xs text-slate-500 font-medium">{{ app.company_name }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-xs font-bold text-slate-700">
+                            {% if app.category %}<span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-2xs font-extrabold bg-purple-50 text-purple-700 border border-purple-100">{{ app.category.name }}</span>{% else %}<span class="text-slate-400 font-normal">Uncategorized</span>{% endif %}
+                        </div>
+                        <div class="text-xs text-slate-500 mt-1 flex items-center"><i class="fas fa-map-marker-alt text-slate-400 mr-1.5 w-3 text-center"></i> {{ app.location|default:"Remote / Unspecified" }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-lg
+                            {% if app.status == 'Applied' %}bg-blue-50 text-blue-700 border border-blue-200/60
+                            {% elif app.status == 'Interview' %}bg-amber-50 text-amber-700 border border-amber-200/60
+                            {% elif app.status == 'Selected' %}bg-emerald-50 text-emerald-700 border border-emerald-200/60
+                            {% elif app.status == 'Rejected' %}bg-rose-50 text-rose-700 border border-rose-200/60
+                            {% else %}bg-slate-100 text-slate-700 border border-slate-200/60{% endif %}">
+                            {{ app.status }}
+                        </span>
+                        <div class="text-2xs text-slate-400 mt-1 font-medium flex items-center">
+                            <i class="far fa-clock text-slate-400 mr-1"></i> {{ app.application_date|default:"No date" }}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-bold">
+                        <a href="{% url 'application_detail' app.pk %}" class="inline-flex items-center justify-center h-8 px-3.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-primary-600 hover:text-white transition shadow-2xs">
+                            View <i class="fas fa-chevron-right ml-1.5 text-2xs"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-16 text-center">
+                        <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-slate-100 mb-3 text-slate-400">
+                            <i class="fas fa-search text-xl"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 mb-1">No applications found</h3>
+                        <p class="text-slate-500 text-xs">Try adjusting your filters or add a new job application.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

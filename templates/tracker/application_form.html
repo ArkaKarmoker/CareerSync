@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w-full">
+    <!-- Hero Banner -->
+    <div class="bg-gradient-to-r from-slate-900 via-primary-900 to-indigo-900 rounded-3xl p-8 mb-8 text-white shadow-xl shadow-primary-900/10 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center">
+                <i class="fas fa-edit text-primary-400 mr-3"></i>
+                {% if form.instance.pk %}Edit Application{% else %}New Application{% endif %}
+            </h1>
+            <p class="text-slate-300 text-xs sm:text-sm mt-1">{% if form.instance.pk %}Update the details of your job application.{% else %}Fill in the details to start tracking a new application.{% endif %}</p>
+        </div>
+        <a href="{% if form.instance.pk %}{% url 'application_detail' form.instance.pk %}{% else %}{% url 'application_list' %}{% endif %}" class="text-slate-300 hover:text-white text-xs font-bold bg-white/10 hover:bg-white/20 px-4 py-2.5 rounded-xl backdrop-blur-sm transition border border-white/10">
+            Cancel
+        </a>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                    {{ form.non_field_errors|striptags }}
+                </div>
+            {% endif %}
+
+            <!-- ROW 1: Job Title, Company Name, Category (3 items in 1 line) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Job Title -->
+                <div>
+                    <label for="{{ form.job_title.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.job_title.label }}</label>
+                    <input type="text" name="job_title" id="{{ form.job_title.id_for_label }}" value="{{ form.job_title.value|default_if_none:'' }}" placeholder="e.g. Senior Frontend Developer" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                    {% if form.job_title.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.job_title.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <!-- Company Name -->
+                <div>
+                    <label for="{{ form.company_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.company_name.label }}</label>
+                    <input type="text" name="company_name" id="{{ form.company_name.id_for_label }}" value="{{ form.company_name.value|default_if_none:'' }}" placeholder="e.g. Google" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                    {% if form.company_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.company_name.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label for="{{ form.category.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.category.label }}</label>
+                    <div class="relative">
+                        <select name="category" id="{{ form.category.id_for_label }}" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                            {% for choice in form.category.field.choices %}
+                                <option value="{{ choice.0 }}" {% if form.category.value == choice.0 or form.category.value|stringformat:"s" == choice.0|stringformat:"s" %}selected{% endif %}>{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                            <i class="fas fa-chevron-down text-2xs"></i>
+                        </div>
+                    </div>
+                    {% if form.category.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.category.errors|striptags }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- ROW 2: Job Description (Single line full width) -->
+            <div>
+                <label for="{{ form.job_description.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.job_description.label }}</label>
+                <textarea name="job_description" id="{{ form.job_description.id_for_label }}" rows="6" placeholder="Paste the job description here..." class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">{{ form.job_description.value|default_if_none:'' }}</textarea>
+                {% if form.job_description.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.job_description.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <!-- ROW 3: Location, Salary, Job URL (3 items in 1 line) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Location -->
+                <div>
+                    <label for="{{ form.location.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.location.label }}</label>
+                    <input type="text" name="location" id="{{ form.location.id_for_label }}" value="{{ form.location.value|default_if_none:'' }}" placeholder="e.g. Remote / New York" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                    {% if form.location.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.location.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <!-- Salary -->
+                <div>
+                    <label for="{{ form.salary.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.salary.label }}</label>
+                    <input type="text" name="salary" id="{{ form.salary.id_for_label }}" value="{{ form.salary.value|default_if_none:'' }}" placeholder="e.g. $100,000 / yr" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                    {% if form.salary.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.salary.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <!-- Job URL -->
+                <div>
+                    <label for="{{ form.job_url.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.job_url.label }}</label>
+                    <input type="url" name="job_url" id="{{ form.job_url.id_for_label }}" value="{{ form.job_url.value|default_if_none:'' }}" placeholder="https://company.com/job/123" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                    {% if form.job_url.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.job_url.errors|striptags }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- ROW 4: Application Date, Status, Tags (3 items in 1 line) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Application Date -->
+                <div>
+                    <label for="{{ form.application_date.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.application_date.label }}</label>
+                    <input type="date" name="application_date" id="{{ form.application_date.id_for_label }}" value="{{ form.application_date.value|date:'Y-m-d'|default:'' }}" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                    {% if form.application_date.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.application_date.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label for="{{ form.status.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.status.label }}</label>
+                    <div class="relative">
+                        <select name="status" id="{{ form.status.id_for_label }}" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                            {% for choice in form.status.field.choices %}
+                                <option value="{{ choice.0 }}" {% if form.status.value == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                            <i class="fas fa-chevron-down text-2xs"></i>
+                        </div>
+                    </div>
+                    {% if form.status.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.status.errors|striptags }}</p>{% endif %}
+                </div>
+
+                <!-- Tags -->
+                <div>
+                    <label for="{{ form.tags.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.tags.label }}</label>
+                    <input type="text" name="tags" id="{{ form.tags.id_for_label }}" value="{{ form.tags.value|default_if_none:'' }}" placeholder="e.g. react, remote, high-pay" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                    {% if form.tags.help_text %}<p class="mt-1 text-2xs text-slate-400 font-medium">{{ form.tags.help_text }}</p>{% endif %}
+                    {% if form.tags.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.tags.errors|striptags }}</p>{% endif %}
+                </div>
+            </div>
+
+            <!-- ROW 5: Notes (Single line full width) -->
+            <div>
+                <label for="{{ form.notes.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.notes.label }}</label>
+                <textarea name="notes" id="{{ form.notes.id_for_label }}" rows="3" placeholder="Add any personal notes, referral info, or thoughts..." class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">{{ form.notes.value|default_if_none:'' }}</textarea>
+                {% if form.notes.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.notes.errors|striptags }}</p>{% endif %}
+            </div>
+
+            <div class="pt-6 border-t border-slate-100 flex justify-end">
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    Save Application
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

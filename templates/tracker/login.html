@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w-full max-w-md mx-auto my-auto bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
+    <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary-50 text-primary-600 border border-primary-100 shadow-sm mb-3">
+            <i class="fas fa-sign-in-alt text-xl"></i>
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h2>
+        <p class="text-xs text-slate-500 mt-1 font-medium">Log in to continue your job search journey</p>
+    </div>
+    
+    <form method="post" class="space-y-5">
+        {% csrf_token %}
+        
+        <div>
+            <label for="id_username" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Username</label>
+            <input type="text" name="username" id="id_username" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+        </div>
+
+        <div>
+            <label for="id_password" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Password</label>
+            <div class="relative">
+                <input type="password" name="password" id="id_password" class="appearance-none block w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                <button type="button" onclick="togglePasswordVisibility('id_password', 'toggle-icon-login')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                    <i id="toggle-icon-login" class="far fa-eye text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="pt-2">
+            <button type="submit" class="w-full flex justify-center py-3 px-4 rounded-xl shadow-md text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition transform hover:-translate-y-0.5">
+                Log In
+            </button>
+        </div>
+    </form>
+    
+    <div class="mt-8 text-center pt-6 border-t border-slate-100">
+        <p class="text-xs text-slate-500 font-semibold">Don't have an account? <a href="{% url 'register' %}" class="font-bold text-primary-600 hover:text-primary-800 transition">Sign up</a></p>
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+{% endblock %}
