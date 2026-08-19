@@ -161,8 +161,16 @@
             <div class="space-y-4">
                 {% for interview in application.interviews.all %}
                 <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex justify-between items-start mb-2">
                         <span class="font-extrabold text-slate-900 text-xs uppercase tracking-wider bg-white px-2.5 py-1 rounded-lg border border-slate-200/60">{{ interview.interview_type }}</span>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <a href="{% url 'interview_update' interview.pk %}" class="text-slate-400 hover:text-primary-600 transition p-1" title="Edit Interview">
+                                <i class="fas fa-edit text-xs"></i>
+                            </a>
+                            <a href="{% url 'interview_delete' interview.pk %}" class="text-slate-400 hover:text-rose-600 transition p-1" title="Delete Interview">
+                                <i class="fas fa-trash-alt text-xs"></i>
+                            </a>
+                        </div>
                     </div>
                     <div class="text-xs text-slate-600 mb-2 flex items-center">
                         <i class="far fa-calendar-alt text-primary-600 mr-2 text-xs"></i> {{ interview.interview_date|date:"M d, Y" }} &bull; {{ interview.interview_date|time:"h:i A" }}
@@ -190,4 +198,5 @@
         </div>
     </div>
 </div>
+
 {% endblock %}

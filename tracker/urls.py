@@ -21,6 +21,8 @@ urlpatterns = [
 
     # Interviews
     path('applications/<int:application_id>/interviews/new/', views.InterviewCreateView.as_view(), name='interview_create'),
+    path('interviews/<int:pk>/edit/', views.InterviewUpdateView.as_view(), name='interview_update'),
+    path('interviews/<int:pk>/delete/', views.InterviewDeleteView.as_view(), name='interview_delete'),
 
     # AI Analysis
     path('applications/<int:application_id>/analyze/', views.analyze_job, name='analyze_job'),

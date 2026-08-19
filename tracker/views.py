@@ -204,6 +204,29 @@ class InterviewCreateView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('application_detail', kwargs={'pk': self.kwargs['application_id']})
 
+class InterviewUpdateView(LoginRequiredMixin, UpdateView):
+    model = Interview
+    form_class = InterviewForm
+    template_name = 'tracker/interview_form.html'
+
+    def get_queryset(self):
+        return Interview.objects.filter(application__user=self.request.user)
+
+    def get_success_url(self):
+        messages.success(self.request, "Interview updated successfully.")
+        return reverse_lazy('application_detail', kwargs={'pk': self.object.application.pk})
+
+class InterviewDeleteView(LoginRequiredMixin, DeleteView):
+    model = Interview
+    template_name = 'tracker/interview_confirm_delete.html'
+
+    def get_queryset(self):
+        return Interview.objects.filter(application__user=self.request.user)
+
+    def get_success_url(self):
+        messages.success(self.request, "Interview deleted successfully.")
+        return reverse_lazy('application_detail', kwargs={'pk': self.object.application.pk})
+
 @login_required
 def analyze_job(request, application_id):
     application = get_object_or_404(JobApplication, pk=application_id, user=request.user)
@@ -237,4 +260,4 @@ def analyze_job(request, application_id):
     except Exception as e:
         messages.error(request, f"AI Analysis failed: {str(e)}")
         
-    return redirect(f"{reverse('application_detail', kwargs={'pk': application_id})}#ai-insights")
+    return redirect(f"{reverse('application_detail', kwargs={'pk': application_id})}?ai=1")

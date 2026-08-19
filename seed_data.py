@@ -28,9 +28,9 @@ def seed():
         last_name='Admin'
     )
 
-    print("[*] Creating Main User: Arka Karmoker (arkakarmoker / password123)...")
+    print("[*] Creating Main User: Arka Karmoker (arka / password123)...")
     arka_user = User.objects.create_user(
-        username='arkakarmoker',
+        username='arka',
         email='karmokerarka@gmail.com',
         password='password123',
         first_name='Arka',
@@ -726,7 +726,7 @@ def seed():
     print("   Username: admin")
     print("   Password: admin123")
     print("\n2. MAIN USER ACCOUNT (Arka Karmoker):")
-    print("   Username: arkakarmoker")
+    print("   Username: arka")
     print("   Email:    karmokerarka@gmail.com")
     print("   Password: password123")
     print(f"\n   -> Total Applications Seeded: {JobApplication.objects.count()}")

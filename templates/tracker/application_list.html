@@ -239,16 +239,4 @@
     {% endif %}
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        if (window.location.search.includes('page=') || window.location.search.includes('sort=')) {
-            const table = document.getElementById('applications-table');
-            if (table) {
-                // Scroll instantly so there's no jumpy animation
-                const y = table.getBoundingClientRect().top + window.scrollY - 24; // 24px padding top
-                window.scrollTo({top: y, behavior: 'instant'});
-            }
-        }
-    });
-</script>
 {% endblock %}

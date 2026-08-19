@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,39 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CareerSync - Job Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'js/tailwind-config.js' %}"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .hover-scale {
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .hover-scale:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px -6px rgba(124, 58, 237, 0.12), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-    </style>
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 <body class="bg-slate-50/90 text-slate-800 font-sans min-h-screen flex flex-col antialiased">
 
@@ -68,17 +41,57 @@
                             <span class="text-slate-700 group-hover:text-primary-700 ml-2 text-xs font-bold transition">{{ user.username }}</span>
                             <i class="fas fa-user-cog ml-2 text-2xs text-slate-400 group-hover:text-primary-600"></i>
                         </a>
-                        <form action="{% url 'logout' %}" method="post" class="inline">
+                        <form action="{% url 'logout' %}" method="post" class="hidden md:inline">
                             {% csrf_token %}
                             <button type="submit" class="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-red-600 px-4 h-10 rounded-full text-xs font-bold shadow-sm transition duration-150 hover:bg-slate-50 flex items-center">
                                 <i class="fas fa-sign-out-alt mr-1.5 text-slate-400"></i> Logout
                             </button>
                         </form>
                     {% else %}
-                        <a href="{% url 'login' %}" class="text-slate-600 hover:text-primary-600 px-4 py-2 rounded-xl text-sm font-semibold mr-2 transition">Login</a>
-                        <a href="{% url 'register' %}" class="bg-gradient-to-r from-primary-600 to-indigo-600 text-white hover:from-primary-700 hover:to-indigo-700 px-5 py-2 rounded-xl text-sm font-semibold shadow-md shadow-primary-500/20 transition transform hover:-translate-y-0.5">Register</a>
+                        <div class="hidden md:flex items-center">
+                            <a href="{% url 'login' %}" class="text-slate-600 hover:text-primary-600 px-4 py-2 rounded-xl text-sm font-semibold mr-2 transition">Login</a>
+                            <a href="{% url 'register' %}" class="bg-gradient-to-r from-primary-600 to-indigo-600 text-white hover:from-primary-700 hover:to-indigo-700 px-5 py-2 rounded-xl text-sm font-semibold shadow-md shadow-primary-500/20 transition transform hover:-translate-y-0.5">Register</a>
+                        </div>
                     {% endif %}
+                    
+                    <!-- Mobile menu button -->
+                    <div class="flex md:hidden items-center ml-4">
+                        <button type="button" id="mobile-menu-btn" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition" aria-expanded="false">
+                            <span class="sr-only">Open main menu</span>
+                            <i class="fas fa-bars text-xl" id="mobile-menu-icon"></i>
+                        </button>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden bg-white border-b border-slate-200/80 shadow-md absolute w-full transition-all duration-300 ease-in-out origin-top" id="mobile-menu">
+            <div class="px-4 pt-2 pb-4 space-y-2 sm:px-6">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="text-slate-700 hover:text-primary-600 hover:bg-primary-50 block px-4 py-2.5 rounded-lg text-base font-medium transition">
+                        <i class="fas fa-chart-line w-6 text-slate-400"></i> Dashboard
+                    </a>
+                    <a href="{% url 'application_list' %}" class="text-slate-700 hover:text-primary-600 hover:bg-primary-50 block px-4 py-2.5 rounded-lg text-base font-medium transition">
+                        <i class="fas fa-list w-6 text-slate-400"></i> Applications
+                    </a>
+                    <a href="{% url 'profile' %}" class="text-slate-700 hover:text-primary-600 hover:bg-primary-50 block px-4 py-2.5 rounded-lg text-base font-medium transition">
+                        <i class="fas fa-user-circle w-6 text-slate-400"></i> Profile ({{ user.username }})
+                    </a>
+                    <form action="{% url 'logout' %}" method="post" class="mt-2 block">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full text-left text-red-600 hover:text-red-700 hover:bg-red-50 px-4 py-2.5 rounded-lg text-base font-medium transition">
+                            <i class="fas fa-sign-out-alt w-6"></i> Logout
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="text-slate-700 hover:text-primary-600 hover:bg-primary-50 block px-4 py-2.5 rounded-lg text-base font-medium transition">
+                        <i class="fas fa-sign-in-alt w-6 text-slate-400"></i> Login
+                    </a>
+                    <a href="{% url 'register' %}" class="text-primary-600 hover:text-primary-700 hover:bg-primary-50 block px-4 py-2.5 rounded-lg text-base font-medium transition mt-2 border border-primary-100">
+                        <i class="fas fa-user-plus w-6"></i> Register
+                    </a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -122,24 +135,7 @@
         </div>
     </footer>
 
-    <script>
-        function dismissAlert(el) {
-            if (!el) return;
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(-6px)';
-            setTimeout(() => {
-                el.remove();
-            }, 300);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const alerts = document.querySelectorAll('.alert-msg');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    dismissAlert(alert);
-                }, 4000); // Auto remove after 4 seconds
-            });
-        });
-    </script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/auth.js' %}"></script>
 </body>
 </html>
