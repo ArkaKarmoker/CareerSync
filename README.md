@@ -21,6 +21,7 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
   - [5. AI Job Description Analyzer (Gemini AI)](#5-ai-job-description-analyzer-gemini-ai)
   - [6. Analytics Dashboard](#6-analytics-dashboard)
 - [🛡️ Comprehensive Testing](#%EF%B8%8F-comprehensive-testing)
+- [📸 UI Screenshots](#-ui-screenshots)
 - [🛠️ Tech Stack & Dependencies](#%EF%B8%8F-tech-stack--dependencies)
 - [📁 Project Directory Structure](#-project-directory-structure)
 - [📊 Database Schema & Data Models](#-database-schema--data-models)
@@ -91,71 +92,64 @@ python manage.py test tracker.tests
 
 ---
 
-## 📸 Screenshots & UI Previews
-
-Here is a glimpse of the CareerSync platform:
+## 📸 UI Screenshots
 
 ### Authentication & Dashboard
-<details>
-<summary>Click to view screenshots</summary>
 
-**Login Page**
+**1. Login Page**
 ![Login Page](screenshots/1.%20login%20page.jpeg)
 
-**Registration Page**
+**2. Registration Page**
 ![Registration Page](screenshots/2.%20registration%20page.jpeg)
 
-**Dashboard (Desktop)**
-![Dashboard](screenshots/3.%20dashboard%20page.jpeg)
-</details>
+**3. Dashboard Page**
+![Dashboard Page](screenshots/3.%20dashboard%20page.jpeg)
 
-### Application Management
-<details>
-<summary>Click to view screenshots</summary>
+**12. Profile Page**
+![Profile Page](screenshots/12.%20profile%20page.jpeg)
 
-**Applications List**
+### Job Applications
+
+**4. Applications Page**
 ![Applications Page](screenshots/4.%20applications%20page.jpeg)
 
-**Applications List with Filters**
+**5. Applications Page (With Filter)**
 ![Applications Page with Filter](screenshots/5.%20applications%20page%20with%20filter.jpeg)
 
-**Add Application Form**
+**6. Add Application Page**
 ![Add Application Page](screenshots/6.%20add%20application%20page.jpeg)
 
-**Application Details & AI Insights**
+**7. Application Details Page**
 ![Application Details Page](screenshots/7.%20application%20details%20page.jpeg)
-</details>
 
-### Interview Tracking & Profile
-<details>
-<summary>Click to view screenshots</summary>
+**7. Edit Application Page**
+![Edit Application Page](screenshots/7.%20edit%20application%20page.jpeg)
 
-**Add Interview**
+**11. Delete Application Page**
+![Delete Application Page](screenshots/11.%20delete%20application%20page.jpeg)
+
+### Interviews & AI
+
+**8. Add Interview Page**
 ![Add Interview Page](screenshots/8.%20add%20interview%20page.jpeg)
 
-**Edit Interview**
+**9. Edit Interview Page**
 ![Edit Interview Page](screenshots/9.%20edit%20interview%20page.jpeg)
 
-**Delete Interview Confirmation**
+**10. Delete Interview Page**
 ![Delete Interview Page](screenshots/10.%20delete%20interview%20page.jpeg)
 
-**User Profile**
-![Profile Page](screenshots/12.%20profile%20page.jpeg)
-</details>
-
 ### Mobile Responsiveness
-<details>
-<summary>Click to view screenshots</summary>
 
-**Dashboard (Mobile)**
+**13. Mobile Dashboard**
 ![Mobile Dashboard](screenshots/13.%20mobile%20responsive%20dashboard%20page.png)
 
-**Application Details (Mobile)**
+**14. Mobile Application Details**
 ![Mobile Application Details](screenshots/14.%20mobile%20responsive%20application%20details%20page.png)
 
-**AI Insights (Mobile)**
+**15. Mobile AI Insights**
 ![Mobile AI Insights](screenshots/15.%20mobile%20responsive%20ai%20insights.png)
-</details>
+
 
 ---
 
