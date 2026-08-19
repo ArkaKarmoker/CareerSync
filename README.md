@@ -7,6 +7,8 @@
 
 **CareerSync** is a modern, full-stack Django web application designed to help job seekers seamlessly track, organize, and manage their job applications and interview schedules from a single, beautifully crafted dashboard. Powered by **Google Gemini AI**, CareerSync automatically analyzes complex job descriptions to extract required skills, experience levels, key technologies, and custom interview preparation strategies.
 
+This project was built as an assignment for **Django Batch 10 - Module 20**, fulfilling all core and optional requirements while adding extra robust features like extensive test coverage and mobile responsiveness.
+
 ---
 
 ## 📌 Table of Contents
@@ -18,6 +20,7 @@
   - [4. Interview Management System](#4-interview-management-system)
   - [5. AI Job Description Analyzer (Gemini AI)](#5-ai-job-description-analyzer-gemini-ai)
   - [6. Analytics Dashboard](#6-analytics-dashboard)
+- [🛡️ Comprehensive Testing](#%EF%B8%8F-comprehensive-testing)
 - [🛠️ Tech Stack & Dependencies](#%EF%B8%8F-tech-stack--dependencies)
 - [📁 Project Directory Structure](#-project-directory-structure)
 - [📊 Database Schema & Data Models](#-database-schema--data-models)
@@ -33,11 +36,11 @@
 - **Profile & Security**: User profile management with password update, password validation error alerts, and password visibility toggles.
 
 ### 2. Job Application Lifecycle (CRUD)
-- **Full CRUD Capabilities**: Add, view, edit, and delete job applications.
+- **Full CRUD Capabilities**: Add, view, edit, and delete job applications easily.
 - **Complete Application Attributes**:
   - **Job Title** & **Company Name**
   - **Category** (Frontend, Backend, Fullstack, DevOps, Mobile, etc.)
-  - **Job Description** (Single line expandable)
+  - **Job Description** 
   - **Location** & **Salary Range**
   - **Job URL** (Direct link to posting)
   - **Application Date** & **Tags** (Comma separated)
@@ -45,18 +48,14 @@
   - **Notes**: Personal application notes.
 
 ### 3. Search, Filter & Tagging System
-- **Real-time Search**: Search applications by Job Title or Company Name.
+- **Real-time Search**: Search applications by Job Title, Company Name, or Tags.
 - **Multi-criteria Filtering**: Filter by Application Status, Job Category, and Location.
-- **Structured Layout**: Grid filter bar with an explicit **Apply Filter** action.
+- **Sorting & Pagination**: Sort by date, role, company, or status. Pagination applied (5 items per page) for optimal performance.
 
 ### 4. Interview Management System
-- **Schedule Interviews**: Track upcoming interview rounds for any job application.
-- **Interview Types & Dynamic Badging**:
-  - `HR Screening` (Fuchsia Badge)
-  - `Technical Round` (Blue Badge)
-  - `Final Round` (Emerald Badge)
-  - `Culture Fit / Behavioral` (Amber Badge)
-- **Direct Video Join Link**: Quick access button styled in Zoom/Meet blue (`bg-blue-600`) to launch video calls directly.
+- **Schedule Interviews**: Track upcoming interview rounds for any job application. Full CRUD support for Interviews.
+- **Interview Types & Dynamic Badging**: Easily log HR Screenings, Technical Rounds, and Final Interviews.
+- **Direct Video Join Link**: Quick access button to launch video calls directly.
 - **Notes & Logs**: Keep track of questions asked, preparation notes, and interviewer details.
 
 ### 5. AI Job Description Analyzer (Gemini AI)
@@ -67,7 +66,6 @@
   - **Experience Level**: Minimum years and expertise needed.
   - **Key Technologies**: Parsed clean list of tools, frameworks, and languages.
   - **Interview Preparation Guide**: Tailored bullet points on topics to study for the interview.
-- **Smart UX Anchor Scrolling**: Automatically refocuses the user directly on the **AI Insights** section upon analysis regeneration without jumping to the top of the page.
 
 ### 6. Analytics Dashboard
 - **Total Application Counter**: Summary count of all jobs tracked.
@@ -77,11 +75,95 @@
 
 ---
 
+## 🛡️ Comprehensive Testing
+This project includes a highly robust, automated testing suite powered by Django's `TestCase`. 
+There are currently **25 Comprehensive Test Cases** that ensure system stability across:
+- **Authentication & User Flows**: Registration, Login, Logout, Profile Updates, Password Changes.
+- **Application CRUD & Data Isolation**: Ensures users cannot access, edit, or delete data belonging to other users.
+- **Filtering, Pagination & Sorting**: Verifies accurate URL parameter parsing and queryset filtering.
+- **Interview CRUD & Isolation**: Ensures interview instances are perfectly mapped and isolated.
+- **AI Integration Logic**: Mocks and verifies the Gemini AI analysis pipeline without real API limits.
+
+Run tests using:
+```bash
+python manage.py test tracker.tests
+```
+
+---
+
+## 📸 Screenshots & UI Previews
+
+Here is a glimpse of the CareerSync platform:
+
+### Authentication & Dashboard
+<details>
+<summary>Click to view screenshots</summary>
+
+**Login Page**
+![Login Page](screenshots/1.%20login%20page.jpeg)
+
+**Registration Page**
+![Registration Page](screenshots/2.%20registration%20page.jpeg)
+
+**Dashboard (Desktop)**
+![Dashboard](screenshots/3.%20dashboard%20page.jpeg)
+</details>
+
+### Application Management
+<details>
+<summary>Click to view screenshots</summary>
+
+**Applications List**
+![Applications Page](screenshots/4.%20applications%20page.jpeg)
+
+**Applications List with Filters**
+![Applications Page with Filter](screenshots/5.%20applications%20page%20with%20filter.jpeg)
+
+**Add Application Form**
+![Add Application Page](screenshots/6.%20add%20application%20page.jpeg)
+
+**Application Details & AI Insights**
+![Application Details Page](screenshots/7.%20application%20details%20page.jpeg)
+</details>
+
+### Interview Tracking & Profile
+<details>
+<summary>Click to view screenshots</summary>
+
+**Add Interview**
+![Add Interview Page](screenshots/8.%20add%20interview%20page.jpeg)
+
+**Edit Interview**
+![Edit Interview Page](screenshots/9.%20edit%20interview%20page.jpeg)
+
+**Delete Interview Confirmation**
+![Delete Interview Page](screenshots/10.%20delete%20interview%20page.jpeg)
+
+**User Profile**
+![Profile Page](screenshots/12.%20profile%20page.jpeg)
+</details>
+
+### Mobile Responsiveness
+<details>
+<summary>Click to view screenshots</summary>
+
+**Dashboard (Mobile)**
+![Mobile Dashboard](screenshots/13.%20mobile%20responsive%20dashboard%20page.png)
+
+**Application Details (Mobile)**
+![Mobile Application Details](screenshots/14.%20mobile%20responsive%20application%20details%20page.png)
+
+**AI Insights (Mobile)**
+![Mobile AI Insights](screenshots/15.%20mobile%20responsive%20ai%20insights.png)
+</details>
+
+---
+
 ## 🛠️ Tech Stack & Dependencies
 
 - **Backend Framework**: Django 6.1 (Python 3.10+)
 - **AI Integration**: Google Gemini API (`google-generativeai`)
-- **Frontend Stack**: HTML5, Vanilla JavaScript, Tailwind CSS (via CDN)
+- **Frontend Stack**: HTML5, Vanilla JavaScript, Tailwind CSS 
 - **Icons & Fonts**: FontAwesome 6, Google Fonts (`Outfit`)
 - **Environment Management**: `python-dotenv`
 - **Database**: SQLite3
@@ -102,24 +184,22 @@ CareerSync/
 ├── core/                         # Django Project Core Configuration
 │   ├── settings.py               # Settings & API configuration
 │   ├── urls.py                   # Global Routing
-│   ├── wsgi.py / asgi.py
 ├── tracker/                      # Primary Tracker App
 │   ├── models.py                 # JobApplication, Interview, JobAnalysis, Category
 │   ├── views.py                  # Authentication, Application CRUD & AI Views
 │   ├── forms.py                  # User, Application & Interview Forms
+│   ├── tests.py                  # 25 Comprehensive Automated Tests
 │   ├── ai_utils.py               # Gemini API Integration & Parsing Engine
 │   ├── urls.py                   # App URL Routing
-│   └── admin.py                  # Admin Panel Configurations
+├── static/                       # Static Assets
+│   ├── css/style.css             # Custom modular CSS
+│   ├── js/main.js                # Core UI Interactions
+│   ├── js/auth.js                # Auth UI logic
+│   └── js/tailwind-config.js     # Tailwind themes
 ├── templates/                    # HTML Templates (Tailwind CSS)
-│   ├── base.html                 # Navigation & Base Layout
+│   ├── base.html                 # Responsive Navigation & Base Layout
 │   ├── registration/             # Login & Registration Templates
-│   └── tracker/
-│       ├── dashboard.html        # Main Dashboard & Widgets
-│       ├── application_list.html # Filterable Applications Table
-│       ├── application_detail.html# Detail View & AI Insights
-│       ├── application_form.html # Create / Edit Application Form
-│       ├── interview_form.html   # Create / Edit Interview Form
-│       └── profile.html          # Profile & Password Update Page
+│   └── tracker/                  # Dashboard, CRUD forms, and detail views
 ├── .env                          # Secret API Keys (Not committed to Git)
 ├── seed_data.py                  # Database Seeding Script
 ├── manage.py                     # Django Command Utility
@@ -144,8 +224,6 @@ Follow these simple steps to run CareerSync locally on your machine:
 ### 1. Clone the Repository
 ```bash
 git clone <YOUR_GITHUB_REPOSITORY_URL>
-```
-```bash
 cd CareerSync
 ```
 
@@ -153,15 +231,11 @@ cd CareerSync
 - **Windows (PowerShell)**:
   ```powershell
   python -m venv venv
-  ```
-  ```powershell
   .\venv\Scripts\Activate
   ```
 - **macOS / Linux**:
   ```bash
   python3 -m venv venv
-  ```
-  ```bash
   source venv/bin/activate
   ```
 
@@ -195,7 +269,6 @@ python manage.py runserver
 ```
 
 Open your browser and navigate to: **`http://127.0.0.1:8000/`**
-
 
 
 Developed by **Arka Karmoker**
