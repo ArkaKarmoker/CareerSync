@@ -61,7 +61,7 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
 - **Notes & Logs**: Keep track of questions asked, preparation notes, and interviewer details.
 
 ### 5. AI-Powered Intelligence Suite (Gemini AI)
-- Powered by `google-generativeai` (Google Gemini models).
+- Powered by `google-genai` (Google Gemini models).
 - **One-Click Deep Analysis**: Generates comprehensive AI insights directly from raw job descriptions:
   - **Executive Job Summary**: Quick, concise overview of the role and key duties.
   - **Required Skills**: Extracted list of core skills for candidate selection.
@@ -162,7 +162,7 @@ python manage.py test
 ## 🛠️ Tech Stack & Dependencies
 
 - **Backend Framework**: Django 6.1 (Python 3.10+)
-- **AI Integration**: Google Gemini API (`google-generativeai`)
+- **AI Integration**: Google Gemini API (`google-genai`)
 - **Frontend Stack**: HTML5, Vanilla JavaScript, Tailwind CSS 
 - **Icons & Fonts**: FontAwesome 6, Google Fonts (`Outfit`)
 - **Environment Management**: `python-dotenv`
@@ -171,7 +171,7 @@ python manage.py test
 ### Top-Level Dependencies (`requirements.txt`)
 ```text
 Django==6.1
-google-generativeai==0.8.6
+google-genai==2.19.0
 python-dotenv==1.2.3
 ```
 
@@ -240,38 +240,53 @@ CareerSync/
 
 ## ⚙️ Local Setup & Installation Guide
 
-Follow these simple steps to run CareerSync locally on your machine:
+Follow these steps to set up and run the project locally:
 
-### 1. Clone the Repository
+### 1. Prerequisites
+- **Python 3.10+** (Tested on Python 3.10+) installed on your system.
+
+### 2. Clone the Repository
+Clone the repository:
 ```bash
-git clone https://github.com/ArkaKarmoker/CareerSync
+git clone https://github.com/ArkaKarmoker/CareerSync.git
 ```
+Navigate into the project directory:
 ```bash
 cd CareerSync
 ```
 
-### 2. Create and Activate a Virtual Environment
-- **Windows (PowerShell)**:
-  ```powershell
-  python -m venv venv
-  ```
-  ```powershell
-  .\venv\Scripts\Activate
-  ```
-- **macOS / Linux**:
-  ```bash
-  python3 -m venv venv
-  ```
-  ```bash
-  source venv/bin/activate
-  ```
+### 3. Create & Activate Virtual Environment
 
-### 3. Install Requirements
+**On Windows (PowerShell):**
+
+Create virtual environment:
+```powershell
+python -m venv venv
+```
+
+Activate virtual environment:
+```powershell
+.\venv\Scripts\activate
+```
+
+**On macOS / Linux:**
+
+Create virtual environment:
+```bash
+python3 -m venv venv
+```
+
+Activate virtual environment:
+```bash
+source venv/bin/activate
+```
+
+### 4. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Variables (`.env`)
+### 5. Configure Environment Variables (`.env`)
 Copy the provided `.env.sample` file to create your own `.env` file:
 ```bash
 cp .env.sample .env
@@ -282,23 +297,28 @@ GEMINI_API_KEY=your_google_gemini_api_key_here
 ```
 *(Get a free Gemini API key from [Google AI Studio](https://aistudio.google.com/))*
 
-### 5. Run Database Migrations
+### 6. Database Setup & Sample Data Seeding
+Create database migrations:
+```bash
+python manage.py makemigrations
+```
+Apply database migrations:
 ```bash
 python manage.py migrate
 ```
-
-### 6. (Optional) Seed Demo Data
-To populate the app with sample job applications, interviews, and categories:
+Seed database with sample users, applications, interviews & AI analyses (Optional — pre-populated database included):
 ```bash
 python seed_data.py
 ```
 
-### 7. Start the Development Server
+### 7. Start Development Server
 ```bash
 python manage.py runserver
 ```
 
-Open your browser and navigate to: **`http://127.0.0.1:8000/`**
+Open your web browser and navigate to:
+- **Application Dashboard:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- **Django Admin Panel:** [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
 ---
 
@@ -313,4 +333,6 @@ If you populated the database using `python seed_data.py`, you can instantly log
 
 ---
 
-Developed by **[Arka Karmoker](https://github.com/ArkaKarmoker)**
+Thank you for taking the time to review the CareerSync project!
+
+Developed by [Arka Karmoker](https://github.com/ArkaKarmoker).
