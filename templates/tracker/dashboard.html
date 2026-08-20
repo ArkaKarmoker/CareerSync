@@ -57,50 +57,113 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Recent Applications Section -->
-    <div class="lg:col-span-2 bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
-        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h2 class="text-base font-extrabold text-slate-900 flex items-center"><i class="fas fa-history text-primary-600 mr-2"></i> Recent Applications</h2>
-            <a href="{% url 'application_list' %}" class="text-xs text-primary-600 hover:text-primary-800 font-bold transition flex items-center">View All <i class="fas fa-arrow-right ml-1 text-2xs"></i></a>
-        </div>
-        <div class="divide-y divide-slate-100 flex-grow">
-            {% for app in recent_apps %}
-            <a href="{% url 'application_detail' app.pk %}" class="block hover:bg-slate-50/80 transition duration-150 px-6 py-4 group">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center min-w-0 pr-4">
-                        <div class="h-10 w-10 rounded-xl bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm shadow-inner shrink-0 mr-3.5 group-hover:bg-primary-50 group-hover:text-primary-600 transition">
-                            {{ app.company_name|make_list|first|upper }}
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-sm font-bold text-slate-900 truncate group-hover:text-primary-600 transition">{{ app.job_title }}</p>
-                            <p class="text-xs text-slate-500 font-medium truncate mt-0.5">{{ app.company_name }} &bull; {{ app.location|default:"Remote" }}</p>
-                        </div>
-                    </div>
-                    <div class="shrink-0">
-                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-lg
-                            {% if app.status == 'Applied' %}bg-blue-50 text-blue-700 border border-blue-200/60
-                            {% elif app.status == 'Interview' %}bg-amber-50 text-amber-700 border border-amber-200/60
-                            {% elif app.status == 'Selected' %}bg-emerald-50 text-emerald-700 border border-emerald-200/60
-                            {% elif app.status == 'Rejected' %}bg-rose-50 text-rose-700 border border-rose-200/60
-                            {% else %}bg-slate-100 text-slate-700 border border-slate-200/60{% endif %}">
-                            {{ app.status }}
-                        </span>
-                    </div>
-                </div>
-            </a>
-            {% empty %}
-            <div class="px-6 py-12 text-center flex flex-col items-center justify-center h-full">
-                <div class="h-12 w-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
-                    <i class="fas fa-inbox text-xl"></i>
-                </div>
-                <p class="text-slate-900 font-bold text-sm">No applications yet</p>
-                <p class="text-xs text-slate-500 mt-0.5">Start tracking your job search today!</p>
+    <!-- Left Column: Recent Applications + Top AI Matched Jobs -->
+    <div class="lg:col-span-2 flex flex-col gap-8">
+
+        <!-- Recent Applications Section -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h2 class="text-base font-extrabold text-slate-900 flex items-center"><i class="fas fa-history text-primary-600 mr-2"></i> Recent Applications</h2>
+                <a href="{% url 'application_list' %}" class="text-xs text-primary-600 hover:text-primary-800 font-bold transition flex items-center">View All <i class="fas fa-arrow-right ml-1 text-2xs"></i></a>
             </div>
-            {% endfor %}
+            <div class="divide-y divide-slate-100 flex-grow">
+                {% for app in recent_apps %}
+                <a href="{% url 'application_detail' app.pk %}" class="block hover:bg-slate-50/80 transition duration-150 px-6 py-4 group">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center min-w-0 pr-4">
+                            <div class="h-10 w-10 rounded-xl bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm shadow-inner shrink-0 mr-3.5 group-hover:bg-primary-50 group-hover:text-primary-600 transition">
+                                {{ app.company_name|make_list|first|upper }}
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-slate-900 truncate group-hover:text-primary-600 transition">{{ app.job_title }}</p>
+                                <p class="text-xs text-slate-500 font-medium truncate mt-0.5">{{ app.company_name }} &bull; {{ app.location|default:"Remote" }}</p>
+                            </div>
+                        </div>
+                        <div class="shrink-0">
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-lg
+                                {% if app.status == 'Applied' %}bg-blue-50 text-blue-700 border border-blue-200/60
+                                {% elif app.status == 'Interview' %}bg-amber-50 text-amber-700 border border-amber-200/60
+                                {% elif app.status == 'Selected' %}bg-emerald-50 text-emerald-700 border border-emerald-200/60
+                                {% elif app.status == 'Rejected' %}bg-rose-50 text-rose-700 border border-rose-200/60
+                                {% else %}bg-slate-100 text-slate-700 border border-slate-200/60{% endif %}">
+                                {{ app.status }}
+                            </span>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="px-6 py-12 text-center flex flex-col items-center justify-center h-full">
+                    <div class="h-12 w-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
+                        <i class="fas fa-inbox text-xl"></i>
+                    </div>
+                    <p class="text-slate-900 font-bold text-sm">No applications yet</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Start tracking your job search today!</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+
+        <!-- Top AI Matched Jobs Section -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50/80 to-indigo-50/40">
+                <h2 class="text-base font-extrabold text-slate-900 flex items-center">
+                    <i class="fas fa-brain text-indigo-600 mr-2"></i> Top AI Matched Jobs
+                </h2>
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold border border-indigo-100">Top {{ top_ai_matches|length }}</span>
+            </div>
+            <div class="divide-y divide-slate-100 flex-grow">
+                {% for app in top_ai_matches %}
+                <a href="{% url 'application_detail' app.pk %}?ai=1" class="block hover:bg-indigo-50/30 transition duration-150 px-6 py-4 group">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center min-w-0 pr-4">
+                            <!-- Match Score Ring -->
+                            <div class="relative h-11 w-11 shrink-0 mr-4">
+                                <svg class="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
+                                    <circle cx="22" cy="22" r="18" fill="none" stroke="#e2e8f0" stroke-width="3"></circle>
+                                    <circle cx="22" cy="22" r="18" fill="none"
+                                        stroke="{% if app.analysis.match_score >= 80 %}#10b981{% elif app.analysis.match_score >= 60 %}#f59e0b{% else %}#ef4444{% endif %}"
+                                        stroke-width="3" stroke-linecap="round"
+                                        stroke-dasharray="{{ app.analysis.match_score|floatformat:0 }}.2 100"
+                                        stroke-dashoffset="0"
+                                        style="stroke-dasharray: calc({{ app.analysis.match_score }} * 113.1 / 100) 113.1;"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-xs font-extrabold {% if app.analysis.match_score >= 80 %}text-emerald-600{% elif app.analysis.match_score >= 60 %}text-amber-600{% else %}text-rose-600{% endif %}">{{ app.analysis.match_score }}%</span>
+                                </div>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-bold text-slate-900 truncate group-hover:text-indigo-600 transition">{{ app.job_title }}</p>
+                                <p class="text-xs text-slate-500 font-medium truncate mt-0.5">{{ app.company_name }} &bull; {{ app.location|default:"Remote" }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2.5 shrink-0">
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-bold rounded-lg
+                                {% if app.status == 'Applied' %}bg-blue-50 text-blue-700 border border-blue-200/60
+                                {% elif app.status == 'Interview' %}bg-amber-50 text-amber-700 border border-amber-200/60
+                                {% elif app.status == 'Selected' %}bg-emerald-50 text-emerald-700 border border-emerald-200/60
+                                {% elif app.status == 'Rejected' %}bg-rose-50 text-rose-700 border border-rose-200/60
+                                {% else %}bg-slate-100 text-slate-700 border border-slate-200/60{% endif %}">
+                                {{ app.status }}
+                            </span>
+                            <i class="fas fa-chevron-right text-xs text-slate-300 group-hover:text-indigo-400 transition"></i>
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="px-6 py-12 text-center flex flex-col items-center justify-center h-full">
+                    <div class="h-14 w-14 rounded-full bg-indigo-50 text-indigo-300 flex items-center justify-center mb-3 border border-indigo-100">
+                        <i class="fas fa-robot text-2xl"></i>
+                    </div>
+                    <p class="text-slate-900 font-bold text-sm">No AI analysis yet</p>
+                    <p class="text-xs text-slate-500 mt-0.5 max-w-xs">Run AI Analysis on your applications to see your best-matched jobs here.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 
-    <!-- Upcoming Interviews Section -->
+    <!-- Right Column: Upcoming Interviews (spans full height) -->
     <div class="bg-white rounded-3xl shadow-sm border border-slate-200/80 overflow-hidden flex flex-col">
         <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
             <h2 class="text-base font-extrabold text-slate-900 flex items-center"><i class="far fa-calendar-check text-primary-600 mr-2"></i> Upcoming Interviews</h2>
@@ -143,3 +206,4 @@
     </div>
 </div>
 {% endblock %}
+

@@ -30,19 +30,28 @@ def get_gemini_model():
         
     return genai.GenerativeModel(models_to_try[0])
 
-def generate_job_analysis(job_description):
+def generate_job_analysis(job_description, user_skills=""):
     model = get_gemini_model()
     
+    candidate_context = ""
+    if user_skills and str(user_skills).strip():
+        candidate_context = f"\n    Candidate Profile Skills & Background:\n    {str(user_skills).strip()}\n"
+    else:
+        candidate_context = "\n    Candidate Profile Skills & Background:\n    Fullstack Software Engineer with Python, Django, JavaScript, React, PostgreSQL, Docker, REST APIs, Git\n"
+
     prompt = f"""
-    Analyze the following job description and provide a JSON response with exactly these keys:
+    Analyze the following job description against the candidate's skills profile and provide a JSON response with exactly these keys:
     - job_summary: A brief 2-3 sentence summary of the role.
     - required_skills: A comma-separated list or short text describing core skills.
     - required_experience: A short description of the required years of experience and background.
     - important_technologies: A list of the main tools, languages, or software mentioned.
     - interview_preparation_suggestions: 3-4 bullet points on what to prepare for the interview.
+    - match_score: An integer number (0-100) representing the exact match percentage between the Candidate Skills and the Job Requirements.
+    - match_analysis: 2-3 sentences evaluating the candidate's matching skills, identifying any skill gaps, and giving an overall fit assessment.
+    - interview_questions: 3-4 role-specific technical and behavioral interview questions with brief answer strategies (format as a list of strings or bullet points).
 
     Return ONLY valid JSON without markdown blocks or other text.
-    
+    {candidate_context}
     Job Description:
     {job_description}
     """

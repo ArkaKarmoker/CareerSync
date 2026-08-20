@@ -1,5 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    headline = models.CharField(max_length=255, blank=True, null=True, default="Full Stack Software Engineer")
+    skills = models.TextField(blank=True, null=True, help_text="Comma-separated skills, e.g., Python, Django, React, PostgreSQL, Docker")
+    experience_years = models.IntegerField(default=3, blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def skills_list(self):
+        if not self.skills:
+            return []
+        return [s.strip() for s in self.skills.split(',') if s.strip()]
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+@receiver(post_save, sender=User)
+def create_or_save_user_profile(sender, instance, created, **kwargs):
+    UserProfile.objects.get_or_create(user=instance)
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -56,6 +80,9 @@ class JobAnalysis(models.Model):
     required_experience = models.TextField(blank=True, null=True)
     important_technologies = models.TextField(blank=True, null=True)
     interview_preparation_suggestions = models.TextField(blank=True, null=True)
+    match_score = models.IntegerField(blank=True, null=True, help_text="AI calculated match score percentage (0-100)")
+    match_analysis = models.TextField(blank=True, null=True, help_text="AI job match evaluation and gap analysis")
+    interview_questions = models.TextField(blank=True, null=True, help_text="AI generated role-specific interview questions & answers")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

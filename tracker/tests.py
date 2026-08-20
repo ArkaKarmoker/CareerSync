@@ -107,6 +107,20 @@ class AuthenticationViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(User.objects.filter(username='newuser2').exists())
 
+    def test_register_view_post_duplicate_email(self):
+        data = {
+            'username': 'anotheruser',
+            'email': 'existing@example.com', # already belongs to self.user
+            'first_name': 'Another',
+            'last_name': 'User',
+            'password': 'Password123!',
+            'password_confirm': 'Password123!'
+        }
+        response = self.client.post(reverse('register'), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username='anotheruser').exists())
+        self.assertContains(response, 'An account with this email already exists')
+
     def test_login_and_logout(self):
         # Login
         login_response = self.client.post(reverse('login'), {
@@ -119,6 +133,21 @@ class AuthenticationViewsTests(TestCase):
         logout_response = self.client.post(reverse('logout'))
         self.assertEqual(logout_response.status_code, 302)
 
+    def test_login_invalid_credentials(self):
+        login_response = self.client.post(reverse('login'), {
+            'username': 'existinguser',
+            'password': 'wrongpassword'
+        }, follow=True)
+        self.assertEqual(login_response.status_code, 200)
+        self.assertContains(login_response, 'Please enter a correct username/email and password')
+
+    def test_login_with_email(self):
+        login_response = self.client.post(reverse('login'), {
+            'username': 'existing@example.com',
+            'password': 'password123'
+        })
+        self.assertRedirects(login_response, reverse('dashboard'))
+
     def test_profile_update_and_password_change(self):
         self.client.login(username='existinguser', password='password123')
 
@@ -128,13 +157,19 @@ class AuthenticationViewsTests(TestCase):
             'username': 'existinguser',
             'first_name': 'UpdatedFirst',
             'last_name': 'UpdatedLast',
-            'email': 'updated@example.com'
+            'email': 'updated@example.com',
+            'headline': 'Senior Python Architect',
+            'skills': 'Python, Django, FastAPI, Docker, PostgreSQL',
+            'experience_years': '5',
+            'bio': 'Experienced software builder'
         }
         response = self.client.post(reverse('profile'), profile_data)
         self.assertRedirects(response, reverse('profile'))
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, 'UpdatedFirst')
         self.assertEqual(self.user.email, 'updated@example.com')
+        self.assertEqual(self.user.profile.skills, 'Python, Django, FastAPI, Docker, PostgreSQL')
+        self.assertEqual(self.user.profile.headline, 'Senior Python Architect')
 
         # Change password
         pass_data = {
@@ -305,6 +340,16 @@ class SearchFilterSortPaginationTests(TestCase):
         roles = [app.job_title for app in sort_role.context['applications']]
         self.assertEqual(roles, sorted(roles, reverse=True))
 
+    def test_export_csv(self):
+        response = self.client.get(reverse('export_applications_csv'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv; charset=utf-8')
+        self.assertIn('attachment; filename="careersync_applications.csv"', response['Content-Disposition'])
+        content = response.content.decode('utf-8')
+        self.assertIn('Company Name', content)
+        self.assertIn('Job Title', content)
+        self.assertIn('Company 1', content)
+
 class InterviewAndAITests(TestCase):
     def setUp(self):
         self.client = Client()
@@ -395,7 +440,10 @@ class InterviewAndAITests(TestCase):
             'required_skills': ['PyTorch', 'Transformers', 'CUDA'],
             'required_experience': '5+ years in ML',
             'important_technologies': ['Python', 'PyTorch', 'vLLM'],
-            'interview_preparation_suggestions': ['Review attention mechanisms', 'System design for LLMs']
+            'interview_preparation_suggestions': ['Review attention mechanisms', 'System design for LLMs'],
+            'match_score': 92,
+            'match_analysis': 'Excellent fit for deep learning engineers.',
+            'interview_questions': ['Explain multi-head attention.', 'How to quantize LLMs?']
         }
         response = self.client.get(reverse('analyze_job', kwargs={'application_id': self.app.pk}))
         self.assertRedirects(response, reverse('application_detail', kwargs={'pk': self.app.pk}) + '?ai=1')
@@ -403,6 +451,9 @@ class InterviewAndAITests(TestCase):
         analysis = JobAnalysis.objects.get(application=self.app)
         self.assertEqual(analysis.job_summary, 'Train and deploy generative AI models.')
         self.assertIn('PyTorch', analysis.required_skills)
+        self.assertEqual(analysis.match_score, 92)
+        self.assertEqual(analysis.match_analysis, 'Excellent fit for deep learning engineers.')
+        self.assertIn('multi-head attention', analysis.interview_questions)
 
 class DashboardViewTests(TestCase):
     def setUp(self):

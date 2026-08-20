@@ -1,6 +1,9 @@
+import csv
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
+from django.http import HttpResponse
+from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
@@ -8,41 +11,47 @@ from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.db.models import Count, Q
 
-from .models import JobApplication, Interview, JobAnalysis
-from .forms import UserRegisterForm, JobApplicationForm, InterviewForm, UserProfileUpdateForm
+from .models import JobApplication, Interview, JobAnalysis, UserProfile
+from .forms import UserRegisterForm, JobApplicationForm, InterviewForm, UserProfileUpdateForm, UserProfileDetailsForm
 from .ai_utils import generate_job_analysis
 
-@login_required
-def profile(request):
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
     if request.method == 'POST':
-        if 'update_profile' in request.POST:
-            p_form = UserProfileUpdateForm(request.POST, instance=request.user)
-            pass_form = PasswordChangeForm(user=request.user)
-            if p_form.is_valid():
-                p_form.save()
-                messages.success(request, "Your profile information has been updated successfully!")
-                return redirect('profile')
-            else:
-                messages.error(request, "Please correct the profile errors below.")
-        elif 'change_password' in request.POST:
-            p_form = UserProfileUpdateForm(instance=request.user)
-            pass_form = PasswordChangeForm(user=request.user, data=request.POST)
-            if pass_form.is_valid():
-                user = pass_form.save()
-                update_session_auth_hash(request, user)
-                messages.success(request, "Your password has been changed successfully!")
-                return redirect('profile')
-            else:
-                messages.error(request, "Please correct the password errors below.")
+        username_or_email = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+
+        # Resolve user by username or email
+        user_obj = User.objects.filter(Q(username__iexact=username_or_email) | Q(email__iexact=username_or_email)).first()
+        auth_username = user_obj.username if user_obj else username_or_email
+
+        user = authenticate(request, username=auth_username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Please enter a correct username/email and password. Note that both fields may be case-sensitive.")
+            request.session['login_username'] = username_or_email
+            next_param = request.GET.get('next', '')
+            redirect_url = reverse('login')
+            if next_param:
+                redirect_url += f"?next={next_param}"
+            return redirect(redirect_url)
     else:
-        p_form = UserProfileUpdateForm(instance=request.user)
-        pass_form = PasswordChangeForm(user=request.user)
+        initial_username = request.session.pop('login_username', '')
+        form = AuthenticationForm(initial={'username': initial_username})
 
     context = {
-        'p_form': p_form,
-        'pass_form': pass_form,
+        'form': form,
+        'initial_username': initial_username,
     }
-    return render(request, 'tracker/profile.html', context)
+    return render(request, 'tracker/login.html', context)
 
 def register(request):
     if request.method == 'POST':
@@ -61,6 +70,69 @@ def register(request):
     return render(request, 'tracker/register.html', {'form': form})
 
 @login_required
+def profile(request):
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        if 'update_skills' in request.POST:
+            p_form = UserProfileUpdateForm(instance=request.user)
+            d_form = UserProfileDetailsForm(request.POST, instance=user_profile)
+            pass_form = PasswordChangeForm(user=request.user)
+            if d_form.is_valid():
+                d_form.save()
+                messages.success(request, "Your AI skills and professional profile have been updated successfully!")
+                return redirect('profile')
+            else:
+                messages.error(request, "Please correct the errors in your skills profile.")
+
+        elif 'update_account' in request.POST:
+            p_form = UserProfileUpdateForm(request.POST, instance=request.user)
+            d_form = UserProfileDetailsForm(instance=user_profile)
+            pass_form = PasswordChangeForm(user=request.user)
+            if p_form.is_valid():
+                p_form.save()
+                messages.success(request, "Your account information has been updated successfully!")
+                return redirect('profile')
+            else:
+                messages.error(request, "Please correct the account information errors below.")
+
+        elif 'update_profile' in request.POST:
+            p_form = UserProfileUpdateForm(request.POST, instance=request.user)
+            d_form = UserProfileDetailsForm(request.POST, instance=user_profile)
+            pass_form = PasswordChangeForm(user=request.user)
+            if p_form.is_valid() and d_form.is_valid():
+                p_form.save()
+                d_form.save()
+                messages.success(request, "Your profile and skills have been updated successfully!")
+                return redirect('profile')
+            else:
+                messages.error(request, "Please correct the profile errors below.")
+        elif 'change_password' in request.POST:
+            p_form = UserProfileUpdateForm(instance=request.user)
+            d_form = UserProfileDetailsForm(instance=user_profile)
+            pass_form = PasswordChangeForm(user=request.user, data=request.POST)
+            if pass_form.is_valid():
+                user = pass_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Your password has been changed successfully!")
+                return redirect('profile')
+            else:
+                messages.error(request, "Please correct the password errors below.")
+    else:
+        p_form = UserProfileUpdateForm(instance=request.user)
+        d_form = UserProfileDetailsForm(instance=user_profile)
+        pass_form = PasswordChangeForm(user=request.user)
+
+    context = {
+        'p_form': p_form,
+        'd_form': d_form,
+        'pass_form': pass_form,
+        'user_profile': user_profile,
+    }
+    return render(request, 'tracker/profile.html', context)
+
+
+@login_required
 def dashboard(request):
     applications = JobApplication.objects.filter(user=request.user)
     
@@ -70,11 +142,20 @@ def dashboard(request):
     recent_apps = applications.order_by('-created_at')[:5]
     upcoming_interviews = Interview.objects.filter(application__user=request.user).order_by('interview_date')[:5]
 
+    # Top 5 AI matched jobs — only those with an analysis and a match_score, sorted by highest score
+    top_ai_matches = (
+        applications
+        .filter(analysis__isnull=False, analysis__match_score__isnull=False)
+        .select_related('analysis')
+        .order_by('-analysis__match_score')[:5]
+    )
+
     context = {
         'total_apps': total_apps,
         'status_counts': status_counts,
         'recent_apps': recent_apps,
         'upcoming_interviews': upcoming_interviews,
+        'top_ai_matches': top_ai_matches,
     }
     return render(request, 'tracker/dashboard.html', context)
 
@@ -236,7 +317,10 @@ def analyze_job(request, application_id):
         return redirect('application_detail', pk=application_id)
         
     try:
-        analysis_data = generate_job_analysis(application.job_description)
+        user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        user_skills = user_profile.skills or ""
+        
+        analysis_data = generate_job_analysis(application.job_description, user_skills=user_skills)
         
         # Helper to handle lists returned by LLM
         def parse_to_string(value, is_bulleted=False):
@@ -246,6 +330,13 @@ def analyze_job(request, application_id):
                 return ', '.join(str(item) for item in value)
             return str(value) if value else ''
 
+        # Parse match score safely
+        raw_score = analysis_data.get('match_score', 85)
+        try:
+            match_score = int(str(raw_score).replace('%', '').strip())
+        except (ValueError, TypeError):
+            match_score = 85
+
         analysis, created = JobAnalysis.objects.update_or_create(
             application=application,
             defaults={
@@ -254,6 +345,9 @@ def analyze_job(request, application_id):
                 'required_experience': parse_to_string(analysis_data.get('required_experience')),
                 'important_technologies': parse_to_string(analysis_data.get('important_technologies')),
                 'interview_preparation_suggestions': parse_to_string(analysis_data.get('interview_preparation_suggestions'), is_bulleted=True),
+                'match_score': match_score,
+                'match_analysis': parse_to_string(analysis_data.get('match_analysis')),
+                'interview_questions': parse_to_string(analysis_data.get('interview_questions'), is_bulleted=True),
             }
         )
         messages.success(request, "AI Analysis completed successfully!")
@@ -261,3 +355,59 @@ def analyze_job(request, application_id):
         messages.error(request, f"AI Analysis failed: {str(e)}")
         
     return redirect(f"{reverse('application_detail', kwargs={'pk': application_id})}?ai=1")
+
+@login_required
+def export_applications_csv(request):
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="careersync_applications.csv"'
+    
+    # Write UTF-8 BOM for Excel compatibility
+    response.write('\ufeff')
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'ID', 'Company Name', 'Job Title', 'Status', 'Category', 
+        'Location', 'Application Date', 'Tags', 'Salary Range', 
+        'Job URL', 'Job Description', 'Notes', 'AI Match Score'
+    ])
+
+    applications = JobApplication.objects.filter(user=request.user).select_related('category', 'analysis').order_by('-application_date')
+
+    # Also respect search/filters if user exported from a filtered list
+    q = request.GET.get('q', '').strip()
+    status = request.GET.get('status', '').strip()
+    category = request.GET.get('category', '').strip()
+    location = request.GET.get('location', '').strip()
+
+    if q:
+        applications = applications.filter(
+            Q(company_name__icontains=q) | 
+            Q(job_title__icontains=q) | 
+            Q(notes__icontains=q)
+        )
+    if status:
+        applications = applications.filter(status=status)
+    if category:
+        applications = applications.filter(category_id=category)
+    if location:
+        applications = applications.filter(location__icontains=location)
+
+    for app in applications:
+        match_score = f"{app.analysis.match_score}%" if hasattr(app, 'analysis') and app.analysis and app.analysis.match_score is not None else 'N/A'
+        writer.writerow([
+            app.id,
+            app.company_name,
+            app.job_title,
+            app.get_status_display(),
+            app.category.name if app.category else '',
+            app.location or '',
+            app.application_date.strftime('%Y-%m-%d') if app.application_date else '',
+            app.tags or '',
+            app.salary or '',
+            app.job_url or '',
+            app.job_description or '',
+            app.notes or '',
+            match_score
+        ])
+
+    return response

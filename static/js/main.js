@@ -12,6 +12,11 @@ function dismissAlert(el) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Prevent Form Resubmission dialog on browser refresh
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+    }
+
     // Flash message auto-dismiss
     const alerts = document.querySelectorAll('.alert-msg');
     alerts.forEach(alert => {

@@ -18,7 +18,7 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
   - [2. Job Application Lifecycle (CRUD)](#2-job-application-lifecycle-crud)
   - [3. Search, Filter & Tagging System](#3-search-filter--tagging-system)
   - [4. Interview Management System](#4-interview-management-system)
-  - [5. AI Job Description Analyzer (Gemini AI)](#5-ai-job-description-analyzer-gemini-ai)
+  - [5. AI-Powered Intelligence Suite (Gemini AI)](#5-ai-powered-intelligence-suite-gemini-ai)
   - [6. Analytics Dashboard](#6-analytics-dashboard)
 - [🛡️ Comprehensive Testing](#%EF%B8%8F-comprehensive-testing)
 - [📸 UI Screenshots](#-ui-screenshots)
@@ -26,6 +26,7 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
 - [📁 Project Directory Structure](#-project-directory-structure)
 - [📊 Database Schema & Data Models](#-database-schema--data-models)
 - [⚙️ Local Setup & Installation Guide](#%EF%B8%8F-local-setup--installation-guide)
+- [🔑 Demo User Credentials](#-demo-user-credentials)
 
 ---
 
@@ -59,14 +60,16 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
 - **Direct Video Join Link**: Quick access button to launch video calls directly.
 - **Notes & Logs**: Keep track of questions asked, preparation notes, and interviewer details.
 
-### 5. AI Job Description Analyzer (Gemini AI)
-- Powered by `google-generativeai` (Gemini model).
-- **One-Click Deep Analysis**: Generates AI insights directly from raw job descriptions:
-  - **Executive Job Summary**: Quick overview of the role.
-  - **Required Skills**: Core skills required for candidate selection.
-  - **Experience Level**: Minimum years and expertise needed.
-  - **Key Technologies**: Parsed clean list of tools, frameworks, and languages.
-  - **Interview Preparation Guide**: Tailored bullet points on topics to study for the interview.
+### 5. AI-Powered Intelligence Suite (Gemini AI)
+- Powered by `google-generativeai` (Google Gemini models).
+- **One-Click Deep Analysis**: Generates comprehensive AI insights directly from raw job descriptions:
+  - **Executive Job Summary**: Quick, concise overview of the role and key duties.
+  - **Required Skills**: Extracted list of core skills for candidate selection.
+  - **Experience Level**: Minimum years and background needed.
+  - **Key Technologies**: Parsed clean list of tools, frameworks, and programming languages.
+  - **Interview Preparation Guide**: Tailored bullet points on specific technical and behavioral topics to study.
+  - **🎯 AI Job Match Analysis**: Evaluates candidate profile alignment and calculates an AI Match Score (0–100%) with qualitative fit commentary.
+  - **❓ AI Interview Question Generation**: Generates role-specific technical and behavioral interview questions accompanied by suggested answer hints and strategies.
 
 ### 6. Analytics Dashboard
 - **Total Application Counter**: Summary count of all jobs tracked.
@@ -78,7 +81,7 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
 
 ## 🛡️ Comprehensive Testing
 This project includes a highly robust, automated testing suite powered by Django's `TestCase`. 
-There are currently **25 Comprehensive Test Cases** that ensure system stability across:
+There are currently **28 Comprehensive Test Cases** that ensure system stability across:
 - **Authentication & User Flows**: Registration, Login, Logout, Profile Updates, Password Changes.
 - **Application CRUD & Data Isolation**: Ensures users cannot access, edit, or delete data belonging to other users.
 - **Filtering, Pagination & Sorting**: Verifies accurate URL parameter parsing and queryset filtering.
@@ -96,60 +99,63 @@ python manage.py test tracker.tests
 
 ### Authentication & Dashboard
 
-**1. Login Page**
+**Login Page**
 ![Login Page](screenshots/1.%20login%20page.jpeg)
 
-**2. Registration Page**
+**Registration Page**
 ![Registration Page](screenshots/2.%20registration%20page.jpeg)
 
-**3. Dashboard Page**
+**Dashboard Page**
 ![Dashboard Page](screenshots/3.%20dashboard%20page.jpeg)
 
-**12. Profile Page**
+**Profile Page**
 ![Profile Page](screenshots/12.%20profile%20page.jpeg)
 
 ### Job Applications
 
-**4. Applications Page**
+**Applications Page**
 ![Applications Page](screenshots/4.%20applications%20page.jpeg)
 
-**5. Applications Page (With Filter)**
+**Applications Page (With Filter)**
 ![Applications Page with Filter](screenshots/5.%20applications%20page%20with%20filter.jpeg)
 
-**6. Add Application Page**
+**Add Application Page**
 ![Add Application Page](screenshots/6.%20add%20application%20page.jpeg)
 
-**7. Application Details Page**
+**Application Details Page**
 ![Application Details Page](screenshots/7.%20application%20details%20page.jpeg)
 
-**7. Edit Application Page**
+**Edit Application Page**
 ![Edit Application Page](screenshots/7.%20edit%20application%20page.jpeg)
 
-**11. Delete Application Page**
+**Delete Application Page**
 ![Delete Application Page](screenshots/11.%20delete%20application%20page.jpeg)
 
 ### Interviews & AI
 
-**8. Add Interview Page**
+**Add Interview Page**
 ![Add Interview Page](screenshots/8.%20add%20interview%20page.jpeg)
 
-**9. Edit Interview Page**
+**Edit Interview Page**
 ![Edit Interview Page](screenshots/9.%20edit%20interview%20page.jpeg)
 
-**10. Delete Interview Page**
+**Delete Interview Page**
 ![Delete Interview Page](screenshots/10.%20delete%20interview%20page.jpeg)
 
 ### Mobile Responsiveness
 
-**13. Mobile Dashboard**
-![Mobile Dashboard](screenshots/13.%20mobile%20responsive%20dashboard%20page.png)
-
-**14. Mobile Application Details**
-![Mobile Application Details](screenshots/14.%20mobile%20responsive%20application%20details%20page.png)
-
-**15. Mobile AI Insights**
-![Mobile AI Insights](screenshots/15.%20mobile%20responsive%20ai%20insights.png)
-
+<table>
+  <tr>
+    <td align="center"><b>Mobile Dashboard</b></td>
+    <td align="center"><b>Mobile Application Details</b></td>
+    <td align="center"><b>Mobile AI Insights</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/13.%20mobile%20responsive%20dashboard%20page.png" alt="Mobile Dashboard" width="300"></td>
+    <td align="center"><img src="screenshots/14.%20mobile%20responsive%20application%20details%20page.png" alt="Mobile Application Details" width="300"></td>
+    <td align="center"><img src="screenshots/15.%20mobile%20responsive%20ai%20insights.png" alt="Mobile AI Insights" width="300"></td>
+  </tr>
+</table>
 
 ---
 
@@ -176,38 +182,59 @@ python-dotenv==1.2.3
 ```text
 CareerSync/
 ├── core/                         # Django Project Core Configuration
+│   ├── asgi.py
 │   ├── settings.py               # Settings & API configuration
 │   ├── urls.py                   # Global Routing
-├── tracker/                      # Primary Tracker App
-│   ├── models.py                 # JobApplication, Interview, JobAnalysis, Category
-│   ├── views.py                  # Authentication, Application CRUD & AI Views
-│   ├── forms.py                  # User, Application & Interview Forms
-│   ├── tests.py                  # 25 Comprehensive Automated Tests
-│   ├── ai_utils.py               # Gemini API Integration & Parsing Engine
-│   ├── urls.py                   # App URL Routing
+│   └── wsgi.py
 ├── static/                       # Static Assets
-│   ├── css/style.css             # Custom modular CSS
-│   ├── js/main.js                # Core UI Interactions
-│   ├── js/auth.js                # Auth UI logic
-│   └── js/tailwind-config.js     # Tailwind themes
+│   ├── css/
+│   │   └── style.css             # Custom modular CSS
+│   ├── js/
+│   │   ├── auth.js               # Auth UI logic
+│   │   ├── main.js               # Core UI Interactions
+│   │   └── tailwind-config.js    # Tailwind themes
+│   └── favicon.svg               # Website Favicon
 ├── templates/                    # HTML Templates (Tailwind CSS)
 │   ├── base.html                 # Responsive Navigation & Base Layout
-│   ├── registration/             # Login & Registration Templates
-│   └── tracker/                  # Dashboard, CRUD forms, and detail views
+│   └── tracker/                  # All app templates
+│       ├── application_confirm_delete.html
+│       ├── application_detail.html
+│       ├── application_form.html
+│       ├── application_list.html
+│       ├── dashboard.html
+│       ├── interview_confirm_delete.html
+│       ├── interview_form.html
+│       ├── login.html            # Login Template
+│       ├── profile.html
+│       └── register.html         # Registration Template
+├── tracker/                      # Primary Tracker App
+│   ├── migrations/               # Database Migrations
+│   ├── admin.py                  # Admin Panel Configurations
+│   ├── ai_utils.py               # Gemini API Integration & Parsing Engine
+│   ├── apps.py
+│   ├── forms.py                  # User, Application & Interview Forms
+│   ├── models.py                 # JobApplication, Interview, JobAnalysis, Category
+│   ├── tests.py                  # 28 Comprehensive Automated Tests
+│   ├── urls.py                   # App URL Routing
+│   └── views.py                  # Authentication, Application CRUD & AI Views
 ├── .env                          # Secret API Keys (Not committed to Git)
-├── seed_data.py                  # Database Seeding Script
+├── .env.sample                   # Sample Environment Variables
+├── db.sqlite3                    # Local SQLite Database
 ├── manage.py                     # Django Command Utility
-└── requirements.txt              # Core Python Dependencies
+├── README.md                     # Project Documentation
+├── requirements.txt              # Core Python Dependencies
+└── seed_data.py                  # Database Seeding Script
 ```
 
 ---
 
 ## 📊 Database Schema & Data Models
 
-1. **`Category`**: Pre-defined or custom job category taxonomy (e.g., Frontend, Backend).
-2. **`JobApplication`**: Core model containing job details, company, location, salary, status, tags, and user foreign key.
-3. **`Interview`**: One-to-many relationship with `JobApplication`, storing interview type, date/time, meeting link, and preparation notes.
-4. **`JobAnalysis`**: One-to-one relationship with `JobApplication`, storing AI-generated insights (Summary, Skills, Experience, Tech stack, Prep guide).
+1. **`UserProfile`**: One-to-one relationship with `User`, storing candidate professional title, technical skills, years of experience, and bio used for AI Job Match analysis.
+2. **`Category`**: Pre-defined or custom job category taxonomy (e.g., Frontend, Backend).
+3. **`JobApplication`**: Core model containing job details, company, location, salary, status, tags, and user foreign key.
+4. **`Interview`**: One-to-many relationship with `JobApplication`, storing interview type, date/time, meeting link, and preparation notes.
+5. **`JobAnalysis`**: One-to-one relationship with `JobApplication`, storing AI-generated insights (Summary, Skills, Experience, Tech stack, Prep guide, Match Score, Match Analysis, Generated Interview Questions).
 
 ---
 
@@ -217,7 +244,9 @@ Follow these simple steps to run CareerSync locally on your machine:
 
 ### 1. Clone the Repository
 ```bash
-git clone <YOUR_GITHUB_REPOSITORY_URL>
+git clone https://github.com/ArkaKarmoker/CareerSync
+```
+```bash
 cd CareerSync
 ```
 
@@ -225,11 +254,15 @@ cd CareerSync
 - **Windows (PowerShell)**:
   ```powershell
   python -m venv venv
+  ```
+  ```powershell
   .\venv\Scripts\Activate
   ```
 - **macOS / Linux**:
   ```bash
   python3 -m venv venv
+  ```
+  ```bash
   source venv/bin/activate
   ```
 
@@ -239,9 +272,12 @@ pip install -r requirements.txt
 ```
 
 ### 4. Configure Environment Variables (`.env`)
-Create a `.env` file in the root directory of the project:
+Copy the provided `.env.sample` file to create your own `.env` file:
+```bash
+cp .env.sample .env
+```
+Update the `.env` file with your credentials:
 ```env
-SECRET_KEY=django-insecure-your-secret-key-here
 GEMINI_API_KEY=your_google_gemini_api_key_here
 ```
 *(Get a free Gemini API key from [Google AI Studio](https://aistudio.google.com/))*
@@ -264,5 +300,17 @@ python manage.py runserver
 
 Open your browser and navigate to: **`http://127.0.0.1:8000/`**
 
+---
 
-Developed by **Arka Karmoker**
+## 🔑 Demo User Credentials
+
+If you populated the database using `python seed_data.py`, you can instantly log in using either of the following accounts:
+
+| Role | Username | Password | Details |
+| :--- | :--- | :--- | :--- |
+| **Standard User** | `arka` | `password123` | Pre-populated with 32 sample jobs across multiple statuses, interviews & AI analysis |
+| **Superuser / Admin** | `admin` | `admin123` | Full administrative control via Django Admin Panel ([`http://127.0.0.1:8000/admin/`](http://127.0.0.1:8000/admin/)) |
+
+---
+
+Developed by **[Arka Karmoker](https://github.com/ArkaKarmoker)**

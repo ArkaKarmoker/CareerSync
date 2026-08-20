@@ -99,7 +99,7 @@
         <div id="ai-insights" class="bg-gradient-to-br from-primary-900 via-primary-950 to-slate-900 rounded-3xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-b border-white/10 pb-5">
                 <h2 class="text-xl font-extrabold flex items-center text-white mb-3 sm:mb-0">
-                    <div class="bg-primary-600 text-white p-2 rounded-xl mr-3 shadow-md">
+                    <div class="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center mr-3 shadow-md shrink-0">
                         <i class="fas fa-robot text-base"></i>
                     </div>
                     AI Job Insights
@@ -111,6 +111,33 @@
             
             {% if application.analysis %}
                 <div class="space-y-5">
+                    <!-- Match Score & Gap Analysis -->
+                    {% if application.analysis.match_score %}
+                        <div class="bg-gradient-to-r from-emerald-500/20 via-primary-500/20 to-indigo-500/20 p-5 rounded-2xl border border-emerald-400/30 backdrop-blur-md">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2.5">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-500/30 border border-emerald-400/50 flex items-center justify-center mr-3 shrink-0">
+                                        <i class="fas fa-bullseye text-emerald-300 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-xs font-extrabold text-emerald-200 uppercase tracking-wider">AI Job Match Analysis</h3>
+                                        <p class="text-2xs text-slate-300">Profile compatibility & skill match score</p>
+                                    </div>
+                                </div>
+                                <div class="inline-flex items-center self-start sm:self-auto bg-emerald-500/30 border border-emerald-400/50 px-3.5 py-1.5 rounded-xl">
+                                    <span class="text-xl font-extrabold text-emerald-300">{{ application.analysis.match_score }}%</span>
+                                    <span class="text-2xs font-bold text-emerald-200 ml-1.5 uppercase">Match</span>
+                                </div>
+                            </div>
+                            <div class="w-full bg-white/10 rounded-full h-2 mb-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-emerald-400 to-teal-300 h-2 rounded-full transition-all duration-500" style="width: {{ application.analysis.match_score }}%"></div>
+                            </div>
+                            {% if application.analysis.match_analysis %}
+                                <p class="text-xs text-emerald-100 leading-relaxed font-medium">{{ application.analysis.match_analysis }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
                     <div class="bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/10">
                         <h3 class="text-2xs font-bold text-primary-200 uppercase tracking-wider mb-1.5"><i class="fas fa-align-left mr-1.5"></i> Job Summary</h3>
                         <p class="text-sm text-slate-100 leading-relaxed">{{ application.analysis.job_summary }}</p>
@@ -133,6 +160,16 @@
                         <h3 class="text-xs font-extrabold text-amber-200 uppercase tracking-wider mb-2 flex items-center"><i class="fas fa-lightbulb text-amber-400 text-sm mr-2"></i> Interview Preparation</h3>
                         <div class="text-xs text-amber-100 whitespace-pre-wrap leading-relaxed">{{ application.analysis.interview_preparation_suggestions }}</div>
                     </div>
+
+                    <!-- Generated Interview Questions -->
+                    {% if application.analysis.interview_questions %}
+                        <div class="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 p-5 rounded-2xl border border-indigo-400/30 backdrop-blur-md">
+                            <h3 class="text-xs font-extrabold text-indigo-200 uppercase tracking-wider mb-2.5 flex items-center">
+                                <i class="fas fa-clipboard-question text-indigo-300 text-sm mr-2"></i> AI Generated Interview Questions & Answers
+                            </h3>
+                            <div class="text-xs text-indigo-100 whitespace-pre-wrap leading-relaxed">{{ application.analysis.interview_questions }}</div>
+                        </div>
+                    {% endif %}
                 </div>
             {% else %}
                 <div class="text-center py-10">

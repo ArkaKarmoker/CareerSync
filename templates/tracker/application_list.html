@@ -12,9 +12,14 @@
             <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">All Applications</h1>
             <p class="text-slate-300 text-sm sm:text-base mt-1 max-w-xl">Search, filter, and organize all your job prospects in one place.</p>
         </div>
-        <a href="{% url 'application_create' %}" class="bg-white hover:bg-slate-100 text-primary-900 font-bold py-3 px-6 rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center shrink-0">
-            <i class="fas fa-plus mr-2 text-primary-600"></i> New Application
-        </a>
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
+            <a href="{% url 'application_create' %}" class="bg-white hover:bg-slate-100 text-primary-900 font-bold py-3 px-6 rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center">
+                <i class="fas fa-plus mr-2 text-primary-600"></i> New Application
+            </a>
+            <a href="{% url 'export_applications_csv' %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}" title="Export applications list to CSV file" class="bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-2xl shadow-lg border border-white/20 transition transform hover:-translate-y-0.5 flex items-center backdrop-blur-sm">
+                <i class="fas fa-file-csv mr-2 text-emerald-400"></i> Export CSV
+            </a>
+        </div>
     </div>
 </div>
 
@@ -70,8 +75,8 @@
         </div>
 
         <div class="lg:col-span-2">
-            <label class="block text-xs font-bold mb-1.5 opacity-0 hidden lg:block">Action</label>
-            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl transition shadow-sm font-bold flex items-center justify-center shrink-0">
+            <label class="block text-xs font-bold mb-1.5 opacity-0 hidden lg:block select-none pointer-events-none">Filter</label>
+            <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl transition shadow-sm font-bold flex items-center justify-center shrink-0 text-sm h-[42px] leading-normal">
                 <i class="fas fa-filter text-xs mr-2"></i> Apply Filter
             </button>
         </div>
@@ -133,15 +138,15 @@
                 {% for app in applications %}
                 <tr class="hover:bg-slate-50/80 transition duration-150 group">
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="h-10 w-10 rounded-xl bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm shadow-inner mr-3.5 group-hover:bg-primary-50 group-hover:text-primary-600 transition">
+                        <a href="{% url 'application_detail' app.pk %}" class="flex items-center group/link">
+                            <div class="h-10 w-10 rounded-xl bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm shadow-inner mr-3.5 group-hover/link:bg-primary-50 group-hover/link:text-primary-600 transition">
                                 {{ app.company_name|make_list|first|upper }}
                             </div>
                             <div>
-                                <div class="text-sm font-bold text-slate-900 group-hover:text-primary-600 transition">{{ app.job_title }}</div>
-                                <div class="text-xs text-slate-500 font-medium">{{ app.company_name }}</div>
+                                <div class="text-sm font-bold text-slate-900 group-hover/link:text-primary-600 transition">{{ app.job_title }}</div>
+                                <div class="text-xs text-slate-500 group-hover/link:text-primary-600 hover:underline font-medium transition">{{ app.company_name }}</div>
                             </div>
-                        </div>
+                        </a>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-xs font-bold text-slate-700">

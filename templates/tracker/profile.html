@@ -12,6 +12,9 @@
                 <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center">
                     {{ user.get_full_name|default:user.username }}
                 </h1>
+                {% if user_profile.headline %}
+                    <p class="text-primary-300 font-semibold text-xs sm:text-sm mt-0.5"><i class="fas fa-id-badge mr-1.5"></i>{{ user_profile.headline }}</p>
+                {% endif %}
                 <p class="text-slate-300 text-xs sm:text-sm mt-2 sm:mt-1 flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
                     <span><i class="far fa-envelope mr-1 text-primary-300"></i> {{ user.email|default:"No email provided" }}</span>
                     <span class="hidden sm:inline text-white/40">&bull;</span>
@@ -24,90 +27,180 @@
         </a>
     </div>
 
-    <!-- Main Grid: Update Profile & Change Password -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- 1. Update Profile Info Card -->
-        <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
-            <div class="flex items-center mb-6 pb-4 border-b border-slate-100">
-                <div class="h-10 w-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center mr-3 font-bold border border-primary-100">
-                    <i class="fas fa-user-edit"></i>
-                </div>
-                <div>
-                    <h2 class="text-lg font-extrabold text-slate-900">Profile Information</h2>
-                    <p class="text-xs text-slate-500 font-medium">Update your account personal details</p>
-                </div>
-            </div>
-
-            <form method="post" class="space-y-5">
-                {% csrf_token %}
-                
-                <div>
-                    <label for="{{ p_form.username.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Username</label>
-                    <input type="text" name="username" id="{{ p_form.username.id_for_label }}" value="{{ p_form.username.value|default:'' }}" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
-                    {% if p_form.username.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.username.errors|striptags }}</p>{% endif %}
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="{{ p_form.first_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">First Name</label>
-                        <input type="text" name="first_name" id="{{ p_form.first_name.id_for_label }}" value="{{ p_form.first_name.value|default:'' }}" placeholder="John" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
-                        {% if p_form.first_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.first_name.errors|striptags }}</p>{% endif %}
+    <!-- Main Grid: 2 Columns Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Column: Account Information & Change Password (5 Cols) -->
+        <div class="lg:col-span-5 space-y-8">
+            <!-- 1. Account Information Card -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/80">
+                <div class="flex items-center mb-6 pb-4 border-b border-slate-100">
+                    <div class="h-10 w-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center mr-3 font-bold border border-primary-100">
+                        <i class="fas fa-user-circle text-base"></i>
                     </div>
                     <div>
-                        <label for="{{ p_form.last_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Last Name</label>
-                        <input type="text" name="last_name" id="{{ p_form.last_name.id_for_label }}" value="{{ p_form.last_name.value|default:'' }}" placeholder="Doe" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
-                        {% if p_form.last_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.last_name.errors|striptags }}</p>{% endif %}
+                        <h2 class="text-base font-extrabold text-slate-900">Personal Details</h2>
+                        <p class="text-2xs text-slate-500 font-medium">Update account identity & email</p>
                     </div>
                 </div>
 
-                <div>
-                    <label for="{{ p_form.email.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
-                    <input type="email" name="email" id="{{ p_form.email.id_for_label }}" value="{{ p_form.email.value|default:'' }}" placeholder="john@example.com" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
-                    {% if p_form.email.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.email.errors|striptags }}</p>{% endif %}
-                </div>
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <div>
+                        <label for="{{ p_form.username.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Username</label>
+                        <input type="text" name="username" id="{{ p_form.username.id_for_label }}" value="{{ p_form.username.value|default:'' }}" class="appearance-none block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                        {% if p_form.username.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.username.errors|striptags }}</p>{% endif %}
+                    </div>
 
-                <div class="pt-4 border-t border-slate-100 flex justify-end">
-                    <button type="submit" name="update_profile" class="bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition transform hover:-translate-y-0.5 text-xs uppercase tracking-wider">
-                        Update Profile
-                    </button>
-                </div>
-            </form>
-        </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label for="{{ p_form.first_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">First Name</label>
+                            <input type="text" name="first_name" id="{{ p_form.first_name.id_for_label }}" value="{{ p_form.first_name.value|default:'' }}" placeholder="John" class="appearance-none block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                            {% if p_form.first_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.first_name.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div>
+                            <label for="{{ p_form.last_name.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Last Name</label>
+                            <input type="text" name="last_name" id="{{ p_form.last_name.id_for_label }}" value="{{ p_form.last_name.value|default:'' }}" placeholder="Doe" class="appearance-none block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                            {% if p_form.last_name.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.last_name.errors|striptags }}</p>{% endif %}
+                        </div>
+                    </div>
 
-        <!-- 2. Change Password Card -->
-        <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
-            <div class="flex items-center mb-6 pb-4 border-b border-slate-100">
-                <div class="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mr-3 font-bold border border-amber-100">
-                    <i class="fas fa-key"></i>
-                </div>
-                <div>
-                    <h2 class="text-lg font-extrabold text-slate-900">Change Password</h2>
-                    <p class="text-xs text-slate-500 font-medium">Update your security credentials</p>
-                </div>
-            </div>
+                    <div>
+                        <label for="{{ p_form.email.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
+                        <input type="email" name="email" id="{{ p_form.email.id_for_label }}" value="{{ p_form.email.value|default:'' }}" placeholder="john@example.com" class="appearance-none block w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                        {% if p_form.email.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ p_form.email.errors|striptags }}</p>{% endif %}
+                    </div>
 
-            <form method="post" class="space-y-5">
-                {% csrf_token %}
-                
-                {% for field in pass_form %}
-                <div>
-                    <label for="{{ field.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ field.label }}</label>
-                    <div class="relative">
-                        <input type="password" name="{{ field.name }}" id="{{ field.id_for_label }}" class="appearance-none block w-full px-4 py-3 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
-                        <button type="button" onclick="togglePasswordVisibility('{{ field.id_for_label }}', 'toggle-icon-{{ field.name }}')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
-                            <i id="toggle-icon-{{ field.name }}" class="far fa-eye text-sm"></i>
+                    <div class="pt-3 border-t border-slate-100 flex justify-end">
+                        <button type="submit" name="update_account" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-5 rounded-xl shadow-md transition transform hover:-translate-y-0.5 text-xs uppercase tracking-wider flex items-center justify-center">
+                            <i class="fas fa-user-check mr-2"></i> Save Personal Details
                         </button>
                     </div>
-                    {% if field.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ field.errors|striptags }}</p>{% endif %}
-                </div>
-                {% endfor %}
+                </form>
+            </div>
 
-                <div class="pt-4 border-t border-slate-100 flex justify-end">
-                    <button type="submit" name="change_password" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl shadow-md transition transform hover:-translate-y-0.5 text-xs uppercase tracking-wider">
-                        Update Password
-                    </button>
+            <!-- 2. Change Password Card -->
+            <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200/80">
+                <div class="flex items-center mb-6 pb-4 border-b border-slate-100">
+                    <div class="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mr-3 font-bold border border-amber-100">
+                        <i class="fas fa-shield-alt text-base"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-extrabold text-slate-900">Security & Password</h2>
+                        <p class="text-2xs text-slate-500 font-medium">Update account login password</p>
+                    </div>
                 </div>
-            </form>
+
+                <form method="post" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    {% for field in pass_form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ field.label }}</label>
+                        <div class="relative">
+                            <input type="password" name="{{ field.name }}" id="{{ field.id_for_label }}" class="appearance-none block w-full px-4 py-2.5 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                            <button type="button" onclick="togglePasswordVisibility('{{ field.id_for_label }}', 'toggle-icon-{{ field.name }}')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                                <i id="toggle-icon-{{ field.name }}" class="far fa-eye text-sm"></i>
+                            </button>
+                        </div>
+                        {% if field.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ field.errors|striptags }}</p>{% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="pt-3 border-t border-slate-100 flex justify-end">
+                        <button type="submit" name="change_password" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-5 rounded-xl shadow-md transition transform hover:-translate-y-0.5 text-xs uppercase tracking-wider flex items-center justify-center">
+                            <i class="fas fa-lock mr-2"></i> Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Column: Professional & Skills Profile Card (7 Cols) -->
+        <div class="lg:col-span-7">
+            <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
+                <div>
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                        <div class="flex items-center">
+                            <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-primary-500 to-indigo-600 text-white flex items-center justify-center mr-3.5 font-bold shadow-md shadow-primary-500/20">
+                                <i class="fas fa-brain text-xl"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h2 class="text-lg font-extrabold text-slate-900">AI Skills & Professional Profile</h2>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-3xs font-extrabold bg-primary-100 text-primary-700 uppercase tracking-wide">AI Match Engine</span>
+                                </div>
+                                <p class="text-xs text-slate-500 font-medium">Powers real-time Gemini AI Job Match analysis & question bank generation</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Active Skills Preview Tags -->
+                    {% if user_profile.skills %}
+                        <div class="mb-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/70">
+                            <h3 class="text-3xs font-extrabold text-slate-500 uppercase tracking-wider mb-2.5 flex items-center justify-between">
+                                <span><i class="fas fa-tags mr-1.5 text-primary-600"></i> Active Skills In Your AI Profile</span>
+                                <span class="text-primary-600 lowercase font-bold">benchmark dataset</span>
+                            </h3>
+                            <div class="flex flex-wrap gap-1.5">
+                                {% for skill in user_profile.skills_list %}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold bg-white text-slate-800 border border-slate-200 shadow-2xs">
+                                        <i class="fas fa-check-circle text-emerald-500 text-3xs mr-1.5"></i>{{ skill }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" class="space-y-5">
+                        {% csrf_token %}
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+                            <div class="sm:col-span-2">
+                                <label for="{{ d_form.headline.id_for_label }}" class="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                                    {{ d_form.headline.label }} <span class="normal-case tracking-normal text-[10px] font-normal text-slate-400 ml-1">(max 100 chars)</span>
+                                </label>
+                                <input type="text" name="headline" id="{{ d_form.headline.id_for_label }}" value="{{ d_form.headline.value|default:'' }}" maxlength="100" placeholder="e.g. Full Stack Python & Django Developer" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white font-medium">
+                                {% if d_form.headline.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ d_form.headline.errors|striptags }}</p>{% endif %}
+                            </div>
+
+                            <div class="sm:col-span-1">
+                                <label for="{{ d_form.experience_years.id_for_label }}" class="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                                    Experience <span class="normal-case tracking-normal text-[10px] font-normal text-slate-400 ml-1">(0-50 yrs)</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="number" name="experience_years" id="{{ d_form.experience_years.id_for_label }}" value="{{ d_form.experience_years.value|default:'4' }}" min="0" max="50" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white font-medium">
+                                    <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs font-bold text-slate-400 pointer-events-none">Years</span>
+                                </div>
+                                {% if d_form.experience_years.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ d_form.experience_years.errors|striptags }}</p>{% endif %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="{{ d_form.skills.id_for_label }}" class="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                                {{ d_form.skills.label }} <span class="normal-case tracking-normal text-[10px] font-normal text-slate-400 ml-1">(max 500 chars)</span>
+                            </label>
+                            <textarea name="skills" id="{{ d_form.skills.id_for_label }}" rows="3" maxlength="500" placeholder="e.g. Python, Django, FastAPI, PostgreSQL, Redis, JavaScript, React, Tailwind CSS, Docker, REST APIs, Git, Celery" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white leading-relaxed resize-none text-slate-800 font-medium">{{ d_form.skills.value|default:'' }}</textarea>
+                            <p class="mt-1.5 text-2xs text-slate-400 font-medium">Enter your technical skills separated by commas. Gemini AI analyzes each job description against these specific skills.</p>
+                            {% if d_form.skills.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ d_form.skills.errors|striptags }}</p>{% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ d_form.bio.id_for_label }}" class="block text-2xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                                {{ d_form.bio.label }} <span class="normal-case tracking-normal text-[10px] font-normal text-slate-400 ml-1">(max 1000 chars)</span>
+                            </label>
+                            <textarea name="bio" id="{{ d_form.bio.id_for_label }}" rows="5" maxlength="1000" placeholder="Passionate full-stack developer specialized in building scalable web architectures..." class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white resize-y text-slate-800 font-medium min-h-[160px]">{{ d_form.bio.value|default:'' }}</textarea>
+                            {% if d_form.bio.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ d_form.bio.errors|striptags }}</p>{% endif %}
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex justify-end">
+                            <button type="submit" name="update_skills" class="w-full sm:w-auto bg-gradient-to-r from-primary-600 to-indigo-600 hover:from-primary-700 hover:to-indigo-700 text-white font-extrabold py-3 px-8 rounded-xl shadow-lg shadow-primary-500/25 transition transform hover:-translate-y-0.5 text-xs uppercase tracking-wider flex items-center justify-center">
+                                <i class="fas fa-save mr-2"></i> Save AI Skills & Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
