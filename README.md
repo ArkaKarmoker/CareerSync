@@ -21,12 +21,12 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
   - [5. AI-Powered Intelligence Suite (Gemini AI)](#5-ai-powered-intelligence-suite-gemini-ai)
   - [6. Analytics Dashboard](#6-analytics-dashboard)
 - [🛡️ Comprehensive Testing](#%EF%B8%8F-comprehensive-testing)
-- [📸 UI Screenshots](#-ui-screenshots)
 - [🛠️ Tech Stack & Dependencies](#%EF%B8%8F-tech-stack--dependencies)
 - [📁 Project Directory Structure](#-project-directory-structure)
 - [📊 Database Schema & Data Models](#-database-schema--data-models)
 - [⚙️ Local Setup & Installation Guide](#%EF%B8%8F-local-setup--installation-guide)
 - [🔑 Demo User Credentials](#-demo-user-credentials)
+- [📸 UI Screenshots](#-ui-screenshots)
 
 ---
 
@@ -95,70 +95,6 @@ python manage.py test
 
 ---
 
-## 📸 UI Screenshots
-
-### Authentication & Dashboard
-
-**Login Page**
-![Login Page](screenshots/1.%20login%20page.jpeg)
-
-**Registration Page**
-![Registration Page](screenshots/2.%20registration%20page.jpeg)
-
-**Dashboard Page**
-![Dashboard Page](screenshots/3.%20dashboard%20page.jpeg)
-
-**Profile Page**
-![Profile Page](screenshots/12.%20profile%20page.jpeg)
-
-### Job Applications
-
-**Applications Page**
-![Applications Page](screenshots/4.%20applications%20page.jpeg)
-
-**Applications Page (With Filter)**
-![Applications Page with Filter](screenshots/5.%20applications%20page%20with%20filter.jpeg)
-
-**Add Application Page**
-![Add Application Page](screenshots/6.%20add%20application%20page.jpeg)
-
-**Application Details Page**
-![Application Details Page](screenshots/7.%20application%20details%20page.jpeg)
-
-**Edit Application Page**
-![Edit Application Page](screenshots/7.%20edit%20application%20page.jpeg)
-
-**Delete Application Page**
-![Delete Application Page](screenshots/11.%20delete%20application%20page.jpeg)
-
-### Interviews & AI
-
-**Add Interview Page**
-![Add Interview Page](screenshots/8.%20add%20interview%20page.jpeg)
-
-**Edit Interview Page**
-![Edit Interview Page](screenshots/9.%20edit%20interview%20page.jpeg)
-
-**Delete Interview Page**
-![Delete Interview Page](screenshots/10.%20delete%20interview%20page.jpeg)
-
-### Mobile Responsiveness
-
-<table>
-  <tr>
-    <td align="center"><b>Mobile Dashboard</b></td>
-    <td align="center"><b>Mobile Application Details</b></td>
-    <td align="center"><b>Mobile AI Insights</b></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="screenshots/13.%20mobile%20responsive%20dashboard%20page.png" alt="Mobile Dashboard" width="300"></td>
-    <td align="center"><img src="screenshots/14.%20mobile%20responsive%20application%20details%20page.png" alt="Mobile Application Details" width="300"></td>
-    <td align="center"><img src="screenshots/15.%20mobile%20responsive%20ai%20insights.png" alt="Mobile AI Insights" width="300"></td>
-  </tr>
-</table>
-
----
-
 ## 🛠️ Tech Stack & Dependencies
 
 - **Backend Framework**: Django 6.1 (Python 3.10+)
@@ -219,6 +155,7 @@ CareerSync/
 │   └── views.py                  # Authentication, Application CRUD & AI Views
 ├── .env                          # Secret API Keys (Not committed to Git)
 ├── .env.sample                   # Sample Environment Variables
+├── careersync_applications (Export CSV sample).csv # Sample Exported Applications CSV
 ├── db.sqlite3                    # Local SQLite Database
 ├── manage.py                     # Django Command Utility
 ├── README.md                     # Project Documentation
@@ -330,6 +267,70 @@ If you populated the database using `python seed_data.py`, you can instantly log
 | :--- | :--- | :--- | :--- |
 | **Standard User** | `arka` | `password123` | Pre-populated with 32 sample jobs across multiple statuses, interviews & AI analysis |
 | **Superuser / Admin** | `admin` | `admin123` | Full administrative control via Django Admin Panel ([`http://127.0.0.1:8000/admin/`](http://127.0.0.1:8000/admin/)) |
+
+---
+
+## 📸 UI Screenshots
+
+### Authentication & Dashboard
+
+**Login Page**
+![Login Page](screenshots/1.%20login%20page.jpeg)
+
+**Registration Page**
+![Registration Page](screenshots/2.%20registration%20page.jpeg)
+
+**Dashboard Page**
+![Dashboard Page](screenshots/3.%20dashboard%20page.jpeg)
+
+**Profile Page**
+![Profile Page](screenshots/12.%20profile%20page.jpeg)
+
+### Job Applications
+
+**Applications Page**
+![Applications Page](screenshots/4.%20applications%20page.jpeg)
+
+**Applications Page (With Filter)**
+![Applications Page with Filter](screenshots/5.%20applications%20page%20with%20filter.jpeg)
+
+**Add Application Page**
+![Add Application Page](screenshots/6.%20add%20application%20page.jpeg)
+
+**Application Details Page**
+![Application Details Page](screenshots/7.%20application%20details%20page.jpeg)
+
+**Edit Application Page**
+![Edit Application Page](screenshots/7.%20edit%20application%20page.jpeg)
+
+**Delete Application Page**
+![Delete Application Page](screenshots/11.%20delete%20application%20page.jpeg)
+
+### Interviews & AI
+
+**Add Interview Page**
+![Add Interview Page](screenshots/8.%20add%20interview%20page.jpeg)
+
+**Edit Interview Page**
+![Edit Interview Page](screenshots/9.%20edit%20interview%20page.jpeg)
+
+**Delete Interview Page**
+![Delete Interview Page](screenshots/10.%20delete%20interview%20page.jpeg)
+
+### Mobile Responsiveness
+
+<table>
+  <tr>
+    <td align="center"><b>Mobile Dashboard</b></td>
+    <td align="center"><b>Mobile Application Details</b></td>
+    <td align="center"><b>Mobile AI Insights</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/13.%20mobile%20responsive%20dashboard%20page.png" alt="Mobile Dashboard" width="300"></td>
+    <td align="center"><img src="screenshots/14.%20mobile%20responsive%20application%20details%20page.png" alt="Mobile Application Details" width="300"></td>
+    <td align="center"><img src="screenshots/15.%20mobile%20responsive%20ai%20insights.png" alt="Mobile AI Insights" width="300"></td>
+  </tr>
+</table>
 
 ---
 
