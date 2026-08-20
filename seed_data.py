@@ -17,13 +17,12 @@ def seed():
     print("=" * 60)
 
     print("\n[1/7] Clearing all existing database records...")
-    JobAnalysis.objects.all().delete()
-    Interview.objects.all().delete()
-    JobApplication.objects.all().delete()
-    Category.objects.all().delete()
-    UserProfile.objects.all().delete()
-    User.objects.all().delete()
-    print("      ✓ Database wiped clean.")
+    from django.core.management import call_command
+    
+    # Safely flush the entire database (removes all data and resets auto-increment IDs)
+    call_command('flush', interactive=False)
+
+    print("      ✓ Database flushed and IDs reset to 1.")
 
     # ──────────────────────────────────────────────────────────
     # USERS

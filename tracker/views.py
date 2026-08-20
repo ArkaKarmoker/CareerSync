@@ -394,6 +394,11 @@ def export_applications_csv(request):
 
     for app in applications:
         match_score = f"{app.analysis.match_score}%" if hasattr(app, 'analysis') and app.analysis and app.analysis.match_score is not None else 'N/A'
+        
+        # Clean multiline strings to prevent breaking rows in Excel
+        job_desc = app.job_description.replace('\n', ' ').replace('\r', '') if app.job_description else ''
+        notes_clean = app.notes.replace('\n', ' ').replace('\r', '') if app.notes else ''
+        
         writer.writerow([
             app.id,
             app.company_name,
@@ -405,8 +410,8 @@ def export_applications_csv(request):
             app.tags or '',
             app.salary or '',
             app.job_url or '',
-            app.job_description or '',
-            app.notes or '',
+            job_desc,
+            notes_clean,
             match_score
         ])
 

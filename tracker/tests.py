@@ -473,3 +473,4 @@ class DashboardViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['total_apps'], 2)
         self.assertEqual(len(response.context['upcoming_interviews']), 1)
+        self.assertIn('top_ai_matches', response.context)
