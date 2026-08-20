@@ -37,8 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Auto-scroll handler for AI Insights section
     const aiInsightsSection = document.getElementById('ai-insights');
     if (aiInsightsSection && (window.location.search.includes('ai=1') || window.location.hash === '#ai-insights')) {
-        const y = aiInsightsSection.getBoundingClientRect().top + window.scrollY - 24;
-        window.scrollTo({ top: y, behavior: 'instant' });
+        const targetElement = (aiInsightsSection.previousElementSibling && aiInsightsSection.previousElementSibling.classList.contains('alert-msg')) 
+            ? aiInsightsSection.previousElementSibling 
+            : aiInsightsSection;
+        const y = targetElement.getBoundingClientRect().top + window.scrollY - 110;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 

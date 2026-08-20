@@ -6,6 +6,9 @@ from django.conf import settings
 
 def get_gemini_client():
     api_key = getattr(settings, 'GEMINI_API_KEY', '') or os.environ.get('GEMINI_API_KEY', '')
+    api_key = str(api_key).strip()
+    if not api_key:
+        raise Exception("Invalid or missing Gemini API key. Please check your configuration.")
     return genai.Client(api_key=api_key)
 
 def generate_job_analysis(job_description, user_skills=""):
@@ -35,7 +38,6 @@ def generate_job_analysis(job_description, user_skills=""):
     """
     
     models_to_try = [
-        'gemini-3.6-flash',
         'gemini-3.5-flash-lite',
         'gemini-3.1-flash-lite',
         'gemini-2.5-flash-lite'
@@ -66,6 +68,18 @@ def generate_job_analysis(job_description, user_skills=""):
             return parsed_data
         except Exception as e:
             last_error = e
+            err_str = str(e)
+            if any(k in err_str for k in ["401", "UNAUTHENTICATED", "API_KEY_INVALID", "invalid authentication", "ACCESS_TOKEN_TYPE_UNSUPPORTED", "PERMISSION_DENIED"]):
+                raise Exception("Invalid or missing Gemini API key. Please check your configuration.")
+            elif any(k in err_str for k in ["429", "RESOURCE_EXHAUSTED", "Quota exceeded"]):
+                raise Exception("Gemini API quota exceeded or rate limited. Please try again later.")
             continue
             
-    raise Exception(f"Failed to analyze job description with AI. Error: {str(last_error)}")
+    if last_error:
+        err_str = str(last_error)
+        if any(k in err_str for k in ["401", "UNAUTHENTICATED", "API_KEY_INVALID", "invalid authentication", "ACCESS_TOKEN_TYPE_UNSUPPORTED", "PERMISSION_DENIED"]):
+            raise Exception("Invalid or missing Gemini API key. Please check your configuration.")
+        elif any(k in err_str for k in ["429", "RESOURCE_EXHAUSTED", "Quota exceeded"]):
+            raise Exception("Gemini API quota exceeded or rate limited. Please try again later.")
+            
+    raise Exception("Failed to analyze job description with AI. Please try again later.")

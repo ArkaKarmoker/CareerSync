@@ -108,18 +108,21 @@
     <div id="messages-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
         {% if messages %}
             {% for message in messages %}
+                {% if "AI Analysis completed" not in message.message %}
                 <div class="alert-msg p-4 mb-3 rounded-2xl shadow-sm border flex items-center justify-between text-sm font-semibold transition-all duration-300 transform opacity-100 scale-100
                     {% if message.tags == 'error' %}bg-rose-50 text-rose-800 border-rose-200
+                    {% elif message.tags == 'warning' %}bg-amber-50 text-amber-800 border-amber-200
                     {% elif message.tags == 'success' %}bg-emerald-50 text-emerald-800 border-emerald-200
                     {% else %}bg-indigo-50 text-indigo-800 border-indigo-200{% endif %}">
                     <div class="flex items-center">
-                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle text-rose-500{% elif message.tags == 'success' %}fa-check-circle text-emerald-500{% else %}fa-info-circle text-indigo-500{% endif %} mr-3 text-base"></i>
+                        <i class="fas {% if message.tags == 'error' %}fa-exclamation-circle text-rose-500{% elif message.tags == 'warning' %}fa-exclamation-triangle text-amber-500{% elif message.tags == 'success' %}fa-check-circle text-emerald-500{% else %}fa-info-circle text-indigo-500{% endif %} mr-3 text-base"></i>
                         <span>{{ message }}</span>
                     </div>
                     <button type="button" onclick="dismissAlert(this.closest('.alert-msg'))" class="ml-4 text-slate-400 hover:text-slate-600 focus:outline-none p-1 rounded-lg transition" title="Dismiss">
                         <i class="fas fa-times text-sm"></i>
                     </button>
                 </div>
+                {% endif %}
             {% endfor %}
         {% endif %}
     </div>

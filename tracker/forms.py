@@ -84,6 +84,24 @@ class UserProfileDetailsForm(forms.ModelForm):
             raise forms.ValidationError("Professional bio cannot exceed 1000 characters.")
         return bio
 
+    def has_changed(self):
+        if not self.is_bound or not self.is_valid():
+            return super().has_changed()
+
+        for name in self.fields:
+            initial_val = self.initial.get(name)
+            cleaned_val = self.cleaned_data.get(name)
+
+            if isinstance(initial_val, str) or isinstance(cleaned_val, str):
+                init_s = (initial_val or '').replace('\r\n', '\n').strip()
+                clean_s = (cleaned_val or '').replace('\r\n', '\n').strip()
+                if init_s != clean_s:
+                    return True
+            else:
+                if initial_val != cleaned_val:
+                    return True
+        return False
+
 class JobApplicationForm(forms.ModelForm):
     class Meta:
         model = JobApplication
@@ -92,10 +110,88 @@ class JobApplicationForm(forms.ModelForm):
             'application_date': forms.DateInput(attrs={'type': 'date'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in ['job_description', 'notes', 'job_title', 'company_name', 'location', 'salary', 'job_url', 'tags']:
+            if field_name in self.initial and isinstance(self.initial[field_name], str):
+                self.initial[field_name] = self.initial[field_name].replace('\r\n', '\n')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        for field_name, value in cleaned_data.items():
+            if isinstance(value, str):
+                cleaned_data[field_name] = value.replace('\r\n', '\n')
+        return cleaned_data
+
+    def has_changed(self):
+        if not self.is_bound or not self.is_valid():
+            return super().has_changed()
+
+        for name in self.fields:
+            initial_val = self.initial.get(name)
+            cleaned_val = self.cleaned_data.get(name)
+
+            if isinstance(initial_val, str) or isinstance(cleaned_val, str):
+                init_s = (initial_val or '').replace('\r\n', '\n').strip()
+                clean_s = (cleaned_val or '').replace('\r\n', '\n').strip()
+                if init_s != clean_s:
+                    return True
+            elif isinstance(self.fields[name], forms.ModelChoiceField):
+                init_pk = str(initial_val.pk if hasattr(initial_val, 'pk') else (initial_val or ''))
+                clean_pk = str(cleaned_val.pk if hasattr(cleaned_val, 'pk') else (cleaned_val or ''))
+                if init_pk != clean_pk:
+                    return True
+            else:
+                if initial_val != cleaned_val:
+                    return True
+        return False
+
 class InterviewForm(forms.ModelForm):
     class Meta:
         model = Interview
         fields = ['interview_type', 'interview_date', 'meeting_link', 'interview_notes']
         widgets = {
-            'interview_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+            'interview_date': forms.DateTimeInput(
+                format='%Y-%m-%dT%H:%M',
+                attrs={'type': 'datetime-local'}
+            ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.interview_date:
+            self.initial['interview_date'] = self.instance.interview_date.replace(second=0, microsecond=0)
+        for field_name in ['interview_type', 'meeting_link', 'interview_notes']:
+            if field_name in self.initial and isinstance(self.initial[field_name], str):
+                self.initial[field_name] = self.initial[field_name].replace('\r\n', '\n')
+
+    def clean_interview_date(self):
+        dt = self.cleaned_data.get('interview_date')
+        if dt:
+            dt = dt.replace(second=0, microsecond=0)
+        return dt
+
+    def clean(self):
+        cleaned_data = super().clean()
+        for field_name, value in cleaned_data.items():
+            if isinstance(value, str):
+                cleaned_data[field_name] = value.replace('\r\n', '\n')
+        return cleaned_data
+
+    def has_changed(self):
+        if not self.is_bound or not self.is_valid():
+            return super().has_changed()
+
+        for name in self.fields:
+            initial_val = self.initial.get(name)
+            cleaned_val = self.cleaned_data.get(name)
+
+            if isinstance(initial_val, str) or isinstance(cleaned_val, str):
+                init_s = (initial_val or '').replace('\r\n', '\n').strip()
+                clean_s = (cleaned_val or '').replace('\r\n', '\n').strip()
+                if init_s != clean_s:
+                    return True
+            else:
+                if initial_val != cleaned_val:
+                    return True
+        return False

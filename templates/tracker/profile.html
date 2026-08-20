@@ -98,7 +98,7 @@
                     <div>
                         <label for="{{ field.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">{{ field.label }}</label>
                         <div class="relative">
-                            <input type="password" name="{{ field.name }}" id="{{ field.id_for_label }}" class="appearance-none block w-full px-4 py-2.5 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
+                            <input type="password" name="{{ field.name }}" id="{{ field.id_for_label }}" placeholder="••••••••" class="appearance-none block w-full px-4 py-2.5 pr-11 bg-slate-50 border border-slate-200 rounded-xl shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white" required>
                             <button type="button" onclick="togglePasswordVisibility('{{ field.id_for_label }}', 'toggle-icon-{{ field.name }}')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
                                 <i id="toggle-icon-{{ field.name }}" class="far fa-eye text-sm"></i>
                             </button>

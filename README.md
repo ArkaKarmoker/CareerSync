@@ -81,7 +81,7 @@ This project was built as an assignment for **Django Batch 10 - Module 20**, ful
 
 ## 🛡️ Comprehensive Testing
 This project includes a highly robust, automated testing suite powered by Django's `TestCase`. 
-There are currently **29 Comprehensive Test Cases** that ensure system stability across:
+There are currently **32 Comprehensive Test Cases** that ensure system stability across:
 - **Authentication & User Flows**: Registration, Login, Logout, Profile Updates, Password Changes.
 - **Application CRUD & Data Isolation**: Ensures users cannot access, edit, or delete data belonging to other users.
 - **Filtering, Pagination & Sorting**: Verifies accurate URL parameter parsing and queryset filtering.
@@ -150,7 +150,7 @@ CareerSync/
 │   ├── apps.py
 │   ├── forms.py                  # User, Application & Interview Forms
 │   ├── models.py                 # JobApplication, Interview, JobAnalysis, Category
-│   ├── tests.py                  # 29 Comprehensive Automated Tests
+│   ├── tests.py                  # 32 Comprehensive Automated Tests
 │   ├── urls.py                   # App URL Routing
 │   └── views.py                  # Authentication, Application CRUD & AI Views
 ├── .env                          # Secret API Keys (Not committed to Git)

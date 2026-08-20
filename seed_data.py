@@ -890,17 +890,17 @@ Design and scale time-series databases processing billions of data points per se
         app_date = (now - timedelta(days=tmpl['days_ago'])).date() if tmpl['days_ago'] is not None else None
         app = JobApplication.objects.create(
             user=arka_user,
-            job_title=tmpl['title'],
-            company_name=tmpl['company'],
-            job_description=tmpl['desc'],
-            location=tmpl['location'],
-            salary=tmpl['salary'],
-            job_url=tmpl['url'],
+            job_title=tmpl['title'].replace('\r\n', '\n'),
+            company_name=tmpl['company'].replace('\r\n', '\n'),
+            job_description=tmpl['desc'].replace('\r\n', '\n'),
+            location=tmpl['location'].replace('\r\n', '\n'),
+            salary=tmpl['salary'].replace('\r\n', '\n'),
+            job_url=tmpl['url'].replace('\r\n', '\n'),
             application_date=app_date,
             status=tmpl['status'],
             category=tmpl['category'],
-            tags=tmpl['tags'],
-            notes=tmpl['notes']
+            tags=tmpl['tags'].replace('\r\n', '\n'),
+            notes=tmpl['notes'].replace('\r\n', '\n')
         )
         created_apps.append(app)
 
@@ -1003,10 +1003,10 @@ Design and scale time-series databases processing billions of data points per se
         if company in app_dict:
             Interview.objects.create(
                 application=app_dict[company],
-                interview_date=date,
-                interview_type=itype,
-                meeting_link=link,
-                interview_notes=notes
+                interview_date=date.replace(second=0, microsecond=0),
+                interview_type=itype.replace('\r\n', '\n'),
+                meeting_link=link.replace('\r\n', '\n'),
+                interview_notes=notes.replace('\r\n', '\n')
             )
             interview_count += 1
 

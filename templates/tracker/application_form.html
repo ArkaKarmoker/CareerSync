@@ -18,7 +18,7 @@
 
     <!-- Form Card -->
     <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200/80">
-        <form method="post" class="space-y-6">
+        <form method="post" autocomplete="off" class="space-y-6">
             {% csrf_token %}
             
             {% if form.non_field_errors %}
@@ -96,7 +96,7 @@
                 <!-- Application Date -->
                 <div>
                     <label for="{{ form.application_date.id_for_label }}" class="block text-2xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ form.application_date.label }}</label>
-                    <input type="date" name="application_date" id="{{ form.application_date.id_for_label }}" value="{{ form.application_date.value|date:'Y-m-d'|default:'' }}" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
+                    <input type="date" name="application_date" id="{{ form.application_date.id_for_label }}" value="{% if form.application_date.value %}{% if form.application_date.value.year %}{{ form.application_date.value|date:'Y-m-d' }}{% else %}{{ form.application_date.value }}{% endif %}{% endif %}" class="appearance-none block w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm transition focus:bg-white">
                     {% if form.application_date.errors %}<p class="mt-1 text-xs text-rose-500 font-bold">{{ form.application_date.errors|striptags }}</p>{% endif %}
                 </div>
 
@@ -140,4 +140,56 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    const normalize = val => (val || '').replace(/\r\n/g, '\n').trim();
+
+    const initialValues = {};
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        if (input.name && input.type !== 'hidden' && input.name !== 'csrfmiddlewaretoken') {
+            initialValues[input.name] = normalize(input.value);
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        let hasChanged = false;
+        inputs.forEach(input => {
+            if (input.name && input.type !== 'hidden' && input.name !== 'csrfmiddlewaretoken') {
+                const currentVal = normalize(input.value);
+                const initVal = initialValues[input.name] !== undefined ? initialValues[input.name] : '';
+                if (currentVal !== initVal) {
+                    hasChanged = true;
+                }
+            }
+        });
+
+        if (!hasChanged) {
+            e.preventDefault();
+            const existingAlert = document.getElementById('no-changes-alert');
+            if (existingAlert) existingAlert.remove();
+
+            const alertDiv = document.createElement('div');
+            alertDiv.id = 'no-changes-alert';
+            alertDiv.className = 'alert-msg p-4 mb-6 rounded-2xl shadow-sm border flex items-center justify-between text-sm font-semibold transition-all duration-300 bg-amber-50 text-amber-800 border-amber-200';
+            alertDiv.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-amber-500 mr-3 text-base"></i>
+                    <span>No changes detected.</span>
+                </div>
+                <button type="button" onclick="this.closest('.alert-msg').remove()" class="ml-4 text-slate-400 hover:text-slate-600 focus:outline-none p-1 rounded-lg transition" title="Dismiss">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            `;
+
+            form.parentNode.insertBefore(alertDiv, form);
+            alertDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    });
+});
+</script>
 {% endblock %}

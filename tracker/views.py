@@ -79,8 +79,11 @@ def profile(request):
             d_form = UserProfileDetailsForm(request.POST, instance=user_profile)
             pass_form = PasswordChangeForm(user=request.user)
             if d_form.is_valid():
-                d_form.save()
-                messages.success(request, "Your AI skills and professional profile have been updated successfully!")
+                if d_form.has_changed():
+                    d_form.save()
+                    messages.success(request, "Your AI skills and professional profile have been updated successfully!")
+                else:
+                    messages.warning(request, "No changes detected.")
                 return redirect('profile')
             else:
                 messages.error(request, "Please correct the errors in your skills profile.")
@@ -90,8 +93,11 @@ def profile(request):
             d_form = UserProfileDetailsForm(instance=user_profile)
             pass_form = PasswordChangeForm(user=request.user)
             if p_form.is_valid():
-                p_form.save()
-                messages.success(request, "Your account information has been updated successfully!")
+                if p_form.has_changed():
+                    p_form.save()
+                    messages.success(request, "Your account information has been updated successfully!")
+                else:
+                    messages.warning(request, "No changes detected.")
                 return redirect('profile')
             else:
                 messages.error(request, "Please correct the account information errors below.")
@@ -101,9 +107,12 @@ def profile(request):
             d_form = UserProfileDetailsForm(request.POST, instance=user_profile)
             pass_form = PasswordChangeForm(user=request.user)
             if p_form.is_valid() and d_form.is_valid():
-                p_form.save()
-                d_form.save()
-                messages.success(request, "Your profile and skills have been updated successfully!")
+                if p_form.has_changed() or d_form.has_changed():
+                    p_form.save()
+                    d_form.save()
+                    messages.success(request, "Your profile and skills have been updated successfully!")
+                else:
+                    messages.warning(request, "No changes detected.")
                 return redirect('profile')
             else:
                 messages.error(request, "Please correct the profile errors below.")
@@ -259,8 +268,14 @@ class ApplicationUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         return JobApplication.objects.filter(user=self.request.user)
 
-    def get_success_url(self):
+    def form_valid(self, form):
+        if not form.has_changed():
+            messages.warning(self.request, "No changes detected.")
+            return self.render_to_response(self.get_context_data(form=form))
         messages.success(self.request, "Application updated successfully.")
+        return super().form_valid(form)
+
+    def get_success_url(self):
         return reverse_lazy('application_detail', kwargs={'pk': self.object.pk})
 
 class ApplicationDeleteView(LoginRequiredMixin, DeleteView):
@@ -293,8 +308,20 @@ class InterviewUpdateView(LoginRequiredMixin, UpdateView):
     def get_queryset(self):
         return Interview.objects.filter(application__user=self.request.user)
 
-    def get_success_url(self):
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.object and self.object.interview_date:
+            initial['interview_date'] = self.object.interview_date.replace(second=0, microsecond=0)
+        return initial
+
+    def form_valid(self, form):
+        if not form.has_changed():
+            messages.warning(self.request, "No changes detected.")
+            return self.render_to_response(self.get_context_data(form=form))
         messages.success(self.request, "Interview updated successfully.")
+        return super().form_valid(form)
+
+    def get_success_url(self):
         return reverse_lazy('application_detail', kwargs={'pk': self.object.application.pk})
 
 class InterviewDeleteView(LoginRequiredMixin, DeleteView):
@@ -351,10 +378,17 @@ def analyze_job(request, application_id):
             }
         )
         messages.success(request, "AI Analysis completed successfully!")
+        return redirect(f"{reverse('application_detail', kwargs={'pk': application_id})}?ai=1")
     except Exception as e:
-        messages.error(request, f"AI Analysis failed: {str(e)}")
-        
-    return redirect(f"{reverse('application_detail', kwargs={'pk': application_id})}?ai=1")
+        err_msg = str(e)
+        if any(k in err_msg for k in ["401", "UNAUTHENTICATED", "API_KEY_INVALID", "invalid authentication", "ACCESS_TOKEN_TYPE_UNSUPPORTED", "PERMISSION_DENIED", "API key"]):
+            user_msg = "Invalid or missing Gemini API key. Please check your configuration."
+        elif any(k in err_msg for k in ["429", "RESOURCE_EXHAUSTED", "Quota"]):
+            user_msg = "Gemini API quota exceeded or rate limited. Please try again later."
+        else:
+            user_msg = err_msg.replace("Failed to analyze job description with AI. Error: ", "")
+        messages.error(request, f"AI Analysis failed: {user_msg}")
+        return redirect('application_detail', pk=application_id)
 
 @login_required
 def export_applications_csv(request):

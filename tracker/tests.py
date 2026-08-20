@@ -272,6 +272,25 @@ class ApplicationCRUDTests(TestCase):
         self.assertEqual(self.app1.job_title, 'Senior Frontend Developer')
         self.assertEqual(self.app1.status, 'Interview')
 
+    def test_update_application_no_changes(self):
+        self.client.login(username='user1', password='password123')
+        same_data = {
+            'job_title': self.app1.job_title,
+            'company_name': self.app1.company_name,
+            'job_description': self.app1.job_description or '',
+            'location': self.app1.location or '',
+            'salary': self.app1.salary or '',
+            'job_url': self.app1.job_url or '',
+            'application_date': self.app1.application_date.strftime('%Y-%m-%d') if self.app1.application_date else '',
+            'status': self.app1.status,
+            'category': self.app1.category.id if self.app1.category else '',
+            'tags': self.app1.tags or ''
+        }
+        response = self.client.post(reverse('application_update', kwargs={'pk': self.app1.pk}), same_data)
+        self.assertEqual(response.status_code, 200)
+        messages = [m.message for m in response.context['messages']]
+        self.assertIn('No changes detected.', messages)
+
     def test_delete_application(self):
         self.client.login(username='user1', password='password123')
         response = self.client.post(reverse('application_delete', kwargs={'pk': self.app1.pk}))
@@ -392,6 +411,24 @@ class InterviewAndAITests(TestCase):
         self.assertEqual(interview.interview_type, 'Updated HR Screening')
         self.assertEqual(interview.meeting_link, 'https://meet.google.com/xyz')
 
+    def test_update_interview_no_changes(self):
+        dt = (timezone.now() + timedelta(days=1)).replace(second=0, microsecond=0)
+        interview = Interview.objects.create(
+            application=self.app,
+            interview_date=dt,
+            interview_type='HR Screening'
+        )
+        same_data = {
+            'interview_date': dt.strftime('%Y-%m-%d %H:%M:%S'),
+            'interview_type': interview.interview_type,
+            'meeting_link': interview.meeting_link or '',
+            'interview_notes': interview.interview_notes or ''
+        }
+        response = self.client.post(reverse('interview_update', kwargs={'pk': interview.pk}), same_data)
+        self.assertEqual(response.status_code, 200)
+        messages = [m.message for m in response.context['messages']]
+        self.assertIn('No changes detected.', messages)
+
     def test_delete_interview(self):
         interview = Interview.objects.create(
             application=self.app,
@@ -454,6 +491,20 @@ class InterviewAndAITests(TestCase):
         self.assertEqual(analysis.match_score, 92)
         self.assertEqual(analysis.match_analysis, 'Excellent fit for deep learning engineers.')
         self.assertIn('multi-head attention', analysis.interview_questions)
+
+    @patch('tracker.views.generate_job_analysis')
+    def test_ai_analysis_failure(self, mock_ai):
+        mock_ai.side_effect = Exception("API Key invalid or missing")
+        response = self.client.get(reverse('analyze_job', kwargs={'application_id': self.app.pk}))
+        # Must redirect WITHOUT ?ai=1 on failure so page does not auto-scroll away from the error message banner
+        self.assertRedirects(response, reverse('application_detail', kwargs={'pk': self.app.pk}))
+
+    @patch('tracker.views.generate_job_analysis')
+    def test_ai_analysis_unauthenticated_clean_message(self, mock_ai):
+        mock_ai.side_effect = Exception("Failed to analyze job description with AI. Error: 401 UNAUTHENTICATED. {'error': {'code': 401, 'message': 'Request had invalid authentication credentials.'}}")
+        response = self.client.get(reverse('analyze_job', kwargs={'application_id': self.app.pk}), follow=True)
+        messages = [m.message for m in response.context['messages']]
+        self.assertIn('AI Analysis failed: Invalid or missing Gemini API key. Please check your configuration.', messages)
 
 class DashboardViewTests(TestCase):
     def setUp(self):
